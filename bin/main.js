@@ -882,8 +882,21 @@
   window.headOn = headOn;
 })(window);
 },{}],2:[function(require,module,exports){
-var $h = require("../lib/headOn.js");
+(function(){
+	var config = {
+		NUM_OF_RAYS: 1000
+	}
 
+	if(window.DEBUG){
+		window.config = config;
+	}
+
+	module.exports = config
+}())
+
+},{}],3:[function(require,module,exports){
+var $h = require("../lib/headOn.js");
+var utls = require("./utils.js");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
@@ -897,22 +910,216 @@ var $h = require("../lib/headOn.js");
 		return this.instance;
 	}
 	engine.prototype.init = function(width, height){
+		this.levels = {};
+		this.everything = {};
 		this.gameWidth = width;
 		this.gameHeight = height;
 		this.camera = new $h.Camera(width, height);
 		this.mainCanvas = $h.canvas.create("main", width, height, this.camera);
-		this.mainCanvas.append("body")
+		this.mainCanvas.append("body");
 	}
+	engine.prototype.registerLevel = function(name, leveldata) {
+		// body...
+		var id = utils.UUID();
+		leveldata.ID = id;
+		this.levels[name] = leveldata;
+		this.everything[id] = this.levels[name];
+	};
+	engine.prototype.loadLevel = function(levelname) {
+		var level = this.everything[levelname] || this.levels[levelname];
+		this.currentLevel = level;
+	};
 	var instance = new engine();
 	module.exports = engine;
 }())
-},{"../lib/headOn.js":1}],3:[function(require,module,exports){
+},{"../lib/headOn.js":1,"./utils.js":6}],4:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
-
-
+var Class = require("./utils.js").Class;
+var Light = require("./light");
+var ray = require("./utils").ray;
 engine.init(window.innerWidth, window.innerHeight);
+var map = {
+	get:function(x,y){
+		x = Math.floor(x/this.size);
+		y = Math.floor(y/this.size);
+		//console.log(x,y);
+		if(y>=this.data.length|| x>=this.data[0].length || x<0 || y<0) return -1;
+		return this.data[y][x];
+	},
+	size:16,
+	length:10,
+	width:30,
+	data:[
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+	]
+}
+engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black");
 
-engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black")
+var light = new Light(20,20, 100);
+var tileSize = 16;
+var mul = 1;
+$h.update(function(delta){
+	//console.log(delta);
+	light.position.x += 100 * (delta / 1000) * mul;
+	if(light.position.x > 400){
+		mul = -1;
+	}
+	if(light.position.x < 17){
+		mul = 1;
+	}
+})
+$h.render(function(){
+	engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black");
+	for(var y=0; y<map.length; y++){
+		for(var x = 0; x<map.width; x++){
+			if(map.data[y][x]){
+				engine.mainCanvas.drawRect(16,16, x*16, y*16, "red");
+			}
+		}
+	}
+	light.render(engine.mainCanvas, map);
+	//console.log(ray(20,20, 50,50, map))
 
-},{"../lib/headOn.js":1,"./engine.js":2}]},{},[3])
+})
+
+$h.run();
+
+
+
+
+},{"../lib/headOn.js":1,"./engine.js":3,"./light":5,"./utils":6,"./utils.js":6}],5:[function(require,module,exports){
+var $h = require("../lib/headOn");
+var ray = require("./utils").ray;
+var config = require("./config");
+function Light(x, y, radius, sector, angle, color){
+	this.position = new $h.Vector(x, y);
+	this.radius = radius;
+	if(!x || !y || !radius){
+		this.render = false;
+		console.warn("Lights need x y and radius specified");
+	}
+	this.sector = sector || Math.PI * 2;
+	this.angle = angle || 0;
+	this.color = color || "white"
+}
+module.exports = Light;
+Light.prototype = {
+	render: function(canvas, map){
+		if(this.render === false) return;
+		var NUM_OF_RAYS = config.NUM_OF_RAYS;
+		var ctx = canvas.canvas.ctx;
+		var i;
+		var s;
+		var a = this.angle;
+		var amt = (this.sector)/NUM_OF_RAYS;
+		var p;
+		var end;
+		var t;
+		var p2x;
+		var p2y;
+
+		//Start a path
+		ctx.beginPath();
+		ctx.moveTo(this.position.x, this.position.y);
+		//Loop through all the angles that the light needs
+		//console.log(this, this.position.x, a, this.radius);
+		for(i=0; i<NUM_OF_RAYS; i++, a+=amt){
+			//find the end point of a line from that angle
+			p2x = this.position.x + Math.cos(a) * this.radius;
+			p2y = this.position.y + Math.sin(a) * this.radius;
+			//go along path to find walls.
+			p = ray(this.position.x,this.position.y, p2x, p2y, map);
+
+			if(i===0) end = p;
+			//make a line to where it found a wall or the end of the path
+			ctx.lineTo(p.x, p.y);
+		}
+		//if its a full circle we need to end where we started or there will be a small peice missing
+		//if it isnt a full circle we need to end where the lights position is so we get a nice cone shape
+		if(this.sector === Math.PI * 2){
+			ctx.lineTo(end.x,end.y);
+		}else{
+			ctx.lineTo(this.position.x, this.position.y);
+		}
+		ctx.fillStyle = this.color;
+		ctx.fill();
+	}
+
+}
+},{"../lib/headOn":1,"./config":2,"./utils":6}],6:[function(require,module,exports){
+$h = require("../lib/headOn.js");
+exports.UUID = (function() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+  }
+  return function() {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+           s4() + '-' + s4() + s4() + s4();
+  };
+})();
+
+exports.ray = function(x0, y0, x1, y1, map){
+	var dx = Math.abs(x1-x0);
+	var dy = Math.abs(y1-y0);
+	var xo = x0;
+	var yo = y0;
+	var sx = (x0 < x1) ? 1 : -1;
+	var sy = (y0 < y1) ? 1 : -1;
+	var err = ~~dx-dy;
+	x1 = ~~x1;
+	y1 = ~~y1;
+	 var m
+	//console.log(x0,x1,y0,y1)
+	 //var count = 0;
+	while(true){
+	   m = map.get(x0, y0);
+	   if(m === 1 || m === -1) break;
+	   if (Math.abs(x0-x1) <= 2 && Math.abs(y0-y1) <=2) break;
+	   var e2 = 2*err;
+	   if (e2 >-dy){ err -= dy; x0  += sx; }
+	   if (e2 < dx){ err += dx; y0  += sy;}
+	   //count++;
+	   //console.log(count);
+	   //if(count > 50) break;
+	}
+	return {x:x0, y:y0};
+}
+
+exports.Class = function(constructor, parent, members){
+	if(!members){
+		members = parent;
+		parent = false;
+	}
+
+	if(parent){
+		$h.inherit(parent, constructor);
+	}
+
+	$h.extend(constructor.prototype, members);
+
+}
+
+if (!Object.is) {
+  Object.is = function(v1, v2) {
+    if (v1 === 0 && v2 === 0) {
+      return 1 / v1 === 1 / v2;
+    }
+    if (v1 !== v1) {
+      return v2 !== v2;
+    }
+    return v1 === v2;
+  };
+}
+},{"../lib/headOn.js":1}]},{},[4])

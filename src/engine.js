@@ -1,5 +1,5 @@
 var $h = require("../lib/headOn.js");
-var utls = require("./utils.js")
+var utls = require("./utils.js");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {

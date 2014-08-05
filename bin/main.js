@@ -13,7 +13,7 @@
 
         groups: {},
         _images: {},
-        fps: 50,
+        fps: 30,
         imagesLoaded: true,
         gameTime: 0,
         _update:"",
@@ -443,6 +443,16 @@
             that._images[image.name] = img;
           });
         },
+        setFPS: function(fps){
+          this.fps = fps;
+          this.events.trigger("FPS change");
+        },
+        debug: function(){
+          if(window.DEBUG){
+            console.log.apply(console, arguments);
+          }
+          return;
+        },
         images: function(image){
           if(this._images[image]){
             return this._images[image];
@@ -496,20 +506,27 @@
         run: function(){
           var that = this;
           var then = Date.now();
-          var ltime;
+          var now;
+          var interval = 1000/this.fps;
+          var delta;
           window.requestAnimationFrame(aniframe);
-          setTimeout(updateFrame, 1000/this.fps);
-          function updateFrame(){
-            ltime = then;
-            if(that.imagesLoaded){
-              then = Date.now();
-              that.updateTick(ltime);
-            }
-            setTimeout(updateFrame, 1000/that.fps);
-          }
+          //setTimeout(updateFrame, 1000/this.fps);
+         this.events.listen("FPS change", function(){
+          that.debug(interval)
+          interval = 1000/that.fps;
+          that.debug(interval);
+         })
           function aniframe(){
+            var now = Date.now();
+            delta = now - then;
             //We want the time inbetween frames not the time in between frames + time it took to do a frame
-            that.renderTick();
+            if(delta > interval){
+              that._update(delta);
+              that.renderTick();
+              then = now - (delta % interval);
+            }
+            
+
             window.requestAnimationFrame(aniframe);
           }
 
@@ -1069,7 +1086,12 @@ exports.UUID = (function() {
            s4() + '-' + s4() + s4() + s4();
   };
 })();
-
+exports.debug = function(){
+	if(window.DEBUG){
+		console.log.call(null, arguments);
+	}
+	return;
+}
 exports.ray = function(x0, y0, x1, y1, map){
 	var dx = Math.abs(x1-x0);
 	var dy = Math.abs(y1-y0);

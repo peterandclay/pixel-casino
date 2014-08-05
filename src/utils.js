@@ -10,7 +10,12 @@ exports.UUID = (function() {
            s4() + '-' + s4() + s4() + s4();
   };
 })();
-
+exports.debug = function(){
+	if(window.DEBUG){
+		console.log.call(null, arguments);
+	}
+	return;
+}
 exports.ray = function(x0, y0, x1, y1, map){
 	var dx = Math.abs(x1-x0);
 	var dy = Math.abs(y1-y0);

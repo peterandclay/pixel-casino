@@ -11,6 +11,7 @@ function Light(x, y, radius, sector, angle, color){
 	this.sector = sector || Math.PI * 2;
 	this.angle = angle || 0;
 	this.color = color || "white"
+	//this.frame = 0;
 }
 module.exports = Light;
 Light.prototype = {
@@ -20,14 +21,14 @@ Light.prototype = {
 		var ctx = canvas.canvas.ctx;
 		var i;
 		var s;
-		var a = this.angle;
+		var a = this.angle - (this.sector/2);
 		var amt = (this.sector)/NUM_OF_RAYS;
 		var p;
 		var end;
 		var t;
 		var p2x;
 		var p2y;
-
+		
 		//Start a path
 		ctx.beginPath();
 		ctx.moveTo(this.position.x, this.position.y);

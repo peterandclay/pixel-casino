@@ -3024,12 +3024,37 @@ var states = require("./states");
 	var instance = new engine();
 	module.exports = engine;
 }());
-},{"../lib/headOn.js":2,"./states":8,"./utils.js":9,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./states":9,"./utils.js":10,"q":3}],6:[function(require,module,exports){
+var $h = require("../lib/headOn.js");
+var util = require("./utils");
+
+function Entity(){
+	this.pos = new $h.Vector(5, 10);
+}
+
+util.Class(Entity, {
+	setX: function(x){
+		this.pos.x = x;
+	},
+	setY: function(y){
+		this.pos.y = y;
+	},
+	getX: function(){
+		return this.pos.x;
+	},
+	getY: function(){
+		return this.pos.y;
+	}
+});
+
+module.exports = Entity
+},{"../lib/headOn.js":2,"./utils":10}],7:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
+var Entity = require("./entity");
 engine.load("assests/maps/test_map.json", "json").then(function(img, id){
 	console.log("hey", img)
 	console.log(JSON.parse(img.data))
@@ -3037,6 +3062,8 @@ engine.load("assests/maps/test_map.json", "json").then(function(img, id){
 engine.init(window.innerWidth, window.innerHeight);
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
+var test = new Entity();
+console.log(test.getX());
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
@@ -3128,7 +3155,7 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./light":7,"./utils":9,"./utils.js":9}],7:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./light":8,"./utils":10,"./utils.js":10}],8:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3188,7 +3215,7 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":9}],8:[function(require,module,exports){
+},{"../lib/headOn":2,"./config":4,"./utils":10}],9:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var loading = exports.loading = {
@@ -3232,7 +3259,7 @@ var gameplay = exports.gameplay = {
 	update:function(gamestate, delta){
 	}
 }
-},{"../lib/headOn":2,"./utils":9}],9:[function(require,module,exports){
+},{"../lib/headOn":2,"./utils":10}],10:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {
@@ -3303,4 +3330,4 @@ if (!Object.is) {
     return v1 === v2;
   };
 }
-},{"../lib/headOn.js":2}]},{},[6])
+},{"../lib/headOn.js":2}]},{},[7])

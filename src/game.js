@@ -86,40 +86,7 @@ var light = new Light(20,50, 300, Math.PI/4, -Math.PI, "rgba(255,255,255,1)");
 var plight = new Light(20, 50, 40, Math.PI * 2);
 var tileSize = 16;
 var mul = 1;
-$h.update(function(delta){
-	player.update(delta);
-	plight.position = light.position = player.position.add(new $h.Vector(8,8));
-	light.angle = player.angle;
 
-})
-$h.render(function(){
-	mask.clear();
-	mask.canvas.ctx.save();
-	mask.drawRect(window.innerWidth, window.innerHeight,0,0, "rgba(0,0,0,1)");
-	mask.canvas.ctx.globalCompositeOperation = "destination-out"
-	engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black");
-	for(var y=0; y<map.length; y++){
-		for(var x = 0; x<map.width; x++){
-			if(map.data[y][x]){
-				engine.mainCanvas.drawRect(16,16, x*16, y*16, "red");
-				//mask.drawRect(16,16, x*16, y*16, "white")
-			}else{
-				engine.mainCanvas.drawRect(16,16, x*16, y*16, "pink");
-			}
-		}
-	}
-	
-	
-	//mask.canvas.ctx.restore();
-	light.render(mask, map);
-	player.render(engine.mainCanvas);
-	player.render(mask);
-
-	plight.render(mask, map);
-	mask.canvas.ctx.restore();
-	//console.log(ray(20,20, 50,50, map))
-
-})
 window.addEventListener("mousemove", function(e){
 	mouse = new $h.Vector(e.x, e.y);
 });

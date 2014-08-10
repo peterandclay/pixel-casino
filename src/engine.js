@@ -1,6 +1,7 @@
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
+var states = require("./states");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
@@ -17,8 +18,30 @@ var Q = require("q");
 	engine.getInstance = function(){
 		return engine.prototype._singletonInstance;
 	}
+	engine.prototype.gameState = {
+  		init: function(){
+    		this.state = states.loading;
+    		this.state.enter();
+    		this.engine = engine.getInstance();
+  		},
+  		changeState: function(state){
+    		if(this.state){
+      			this.state.exit();
+     			this.pState = this.state;
+    		}
+	    	this.state = state;
+	    	this.state.enter();
+  		},
+	  	update: function(delta){
+	    	this.state.update(this, delta);
+	  	},
+	  	render: function(canvas){
+	    	this.state.render(this, canvas);
+	  	}
+	};
 	engine.prototype.init = function(width, height){
-		this.loaded = false;
+		var that = this;
+		this.gameState.init();
 		this.gameWidth = width;
 		this.gameHeight = height;
 		this.camera = new $h.Camera(width, height);
@@ -28,7 +51,15 @@ var Q = require("q");
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
+			$h.events.trigger("assestsLoaded");
 		});
+		$h.update(function(delta){
+			that.gameState.update(that.gameState, delta);
+		});
+		$h.render(function(){
+			that.gameState.render(that.mainCanvas);
+		})
+		$h.run();
 	}
 	engine.prototype.registerLevel = function(level) {
 		// body...
@@ -41,13 +72,21 @@ var Q = require("q");
 		this.loading = true;
 		var item;
 		var promises = [];
-		for(var i =0, l=this.loadQueue.length; i<l; i++){
+		var p;
+		var total = this.loadQueue.length;
+		var done = 0;
+		for(var i =0; i<total; i++){
 			item = this.loadQueue[i];
 			if(item.image){
-				promises.push(this.doImage(item));
+				p = this.doImage(item);
 			}else{
-				promises.push(this.doOther(item));
+				p = this.doOther(item);
 			}
+			p.then(function(){
+				done++;
+				$h.events.trigger("percentLoaded", done/total);
+			});
+			promises.push(p);
 		}
 		return Q.all(promises);
 	}
@@ -97,4 +136,4 @@ var Q = require("q");
 	};
 	var instance = new engine();
 	module.exports = engine;
-}())
+}());

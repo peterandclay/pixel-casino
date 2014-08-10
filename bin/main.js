@@ -2870,8 +2870,8 @@ return Q;
 
 });
 
-}).call(this,require("h2L/Qg"))
-},{"h2L/Qg":1}],4:[function(require,module,exports){
+}).call(this,require("fODlV7"))
+},{"fODlV7":1}],4:[function(require,module,exports){
 (function(){
 	var config = {
 		NUM_OF_RAYS: 1000
@@ -2888,6 +2888,7 @@ return Q;
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
+var states = require("./states");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
@@ -2904,8 +2905,30 @@ var Q = require("q");
 	engine.getInstance = function(){
 		return engine.prototype._singletonInstance;
 	}
+	engine.prototype.gameState = {
+  		init: function(){
+    		this.state = states.loading;
+    		this.state.enter();
+    		this.engine = engine.getInstance();
+  		},
+  		changeState: function(state){
+    		if(this.state){
+      			this.state.exit();
+     			this.pState = this.state;
+    		}
+	    	this.state = state;
+	    	this.state.enter();
+  		},
+	  	update: function(delta){
+	    	this.state.update(this, delta);
+	  	},
+	  	render: function(canvas){
+	    	this.state.render(this, canvas);
+	  	}
+	};
 	engine.prototype.init = function(width, height){
-		this.loaded = false;
+		var that = this;
+		this.gameState.init();
 		this.gameWidth = width;
 		this.gameHeight = height;
 		this.camera = new $h.Camera(width, height);
@@ -2915,7 +2938,15 @@ var Q = require("q");
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
+			$h.events.trigger("assestsLoaded");
 		});
+		$h.update(function(delta){
+			that.gameState.update(that.gameState, delta);
+		});
+		$h.render(function(){
+			that.gameState.render(that.mainCanvas);
+		})
+		$h.run();
 	}
 	engine.prototype.registerLevel = function(level) {
 		// body...
@@ -2928,13 +2959,21 @@ var Q = require("q");
 		this.loading = true;
 		var item;
 		var promises = [];
-		for(var i =0, l=this.loadQueue.length; i<l; i++){
+		var p;
+		var total = this.loadQueue.length;
+		var done = 0;
+		for(var i =0; i<total; i++){
 			item = this.loadQueue[i];
 			if(item.image){
-				promises.push(this.doImage(item));
+				p = this.doImage(item);
 			}else{
-				promises.push(this.doOther(item));
+				p = this.doOther(item);
 			}
+			p.then(function(){
+				done++;
+				$h.events.trigger("percentLoaded", done/total);
+			});
+			promises.push(p);
 		}
 		return Q.all(promises);
 	}
@@ -2984,8 +3023,8 @@ var Q = require("q");
 	};
 	var instance = new engine();
 	module.exports = engine;
-}())
-},{"../lib/headOn.js":2,"./utils.js":8,"q":3}],6:[function(require,module,exports){
+}());
+},{"../lib/headOn.js":2,"./states":8,"./utils.js":9,"q":3}],6:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
@@ -3074,40 +3113,7 @@ var light = new Light(20,50, 300, Math.PI/4, -Math.PI, "rgba(255,255,255,1)");
 var plight = new Light(20, 50, 40, Math.PI * 2);
 var tileSize = 16;
 var mul = 1;
-$h.update(function(delta){
-	player.update(delta);
-	plight.position = light.position = player.position.add(new $h.Vector(8,8));
-	light.angle = player.angle;
 
-})
-$h.render(function(){
-	mask.clear();
-	mask.canvas.ctx.save();
-	mask.drawRect(window.innerWidth, window.innerHeight,0,0, "rgba(0,0,0,1)");
-	mask.canvas.ctx.globalCompositeOperation = "destination-out"
-	engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black");
-	for(var y=0; y<map.length; y++){
-		for(var x = 0; x<map.width; x++){
-			if(map.data[y][x]){
-				engine.mainCanvas.drawRect(16,16, x*16, y*16, "red");
-				//mask.drawRect(16,16, x*16, y*16, "white")
-			}else{
-				engine.mainCanvas.drawRect(16,16, x*16, y*16, "pink");
-			}
-		}
-	}
-	
-	
-	//mask.canvas.ctx.restore();
-	light.render(mask, map);
-	player.render(engine.mainCanvas);
-	player.render(mask);
-
-	plight.render(mask, map);
-	mask.canvas.ctx.restore();
-	//console.log(ray(20,20, 50,50, map))
-
-})
 window.addEventListener("mousemove", function(e){
 	mouse = new $h.Vector(e.x, e.y);
 });
@@ -3122,7 +3128,7 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./light":7,"./utils":8,"./utils.js":8}],7:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./light":7,"./utils":9,"./utils.js":9}],7:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3182,7 +3188,51 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":8}],8:[function(require,module,exports){
+},{"../lib/headOn":2,"./config":4,"./utils":9}],8:[function(require,module,exports){
+var $h = require("../lib/headOn");
+var Class = require("./utils").Class;
+var loading = exports.loading = {
+	enter: function(){
+		var that = this;
+		this.percent = 0;
+		$h.events.listen("assestsLoaded", function(){
+			that.loaded = true;
+		});
+		$h.events.listen("percentLoaded", function(p){
+			that.percent = p;
+		});
+	},
+	exit:function(){
+	},
+	render:function(gameState, canvas){
+		canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
+	},
+	update:function(gameState, delta){
+		if(this.loaded){
+			if(!this.once){
+				this.once = true;
+				setTimeout(function(){
+					gameState.changeState(gameplay);
+				},2000);
+			}
+			
+		}
+	}
+};
+
+var gameplay = exports.gameplay = {
+	enter: function(){
+		console.log("enter this one!")
+	},
+	exit:function(){
+	},
+	render:function(gameState, canvas){
+		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
+	},
+	update:function(gamestate, delta){
+	}
+}
+},{"../lib/headOn":2,"./utils":9}],9:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {

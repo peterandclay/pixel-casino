@@ -1,5 +1,6 @@
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
+var engine = require("./engine").getInstance();
 var loading = exports.loading = {
 	enter: function(){
 		var that = this;
@@ -8,15 +9,22 @@ var loading = exports.loading = {
 			that.loaded = true;
 		});
 		$h.events.listen("percentLoaded", function(p){
+			that.percentChange = true;
 			that.percent = p;
 		});
+		this.percentChange = true;
 	},
-	exit:function(){
+	exit: function(){
 	},
-	render:function(gameState, canvas){
-		canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
+	render: function(gameState, canvas){
+		if(this.percentChange){
+			canvas.drawRect(canvas.width, canvas.height, 0,0, "black");
+			canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
+			this.percentChange = false;
+		}
+		
 	},
-	update:function(gameState, delta){
+	update: function(gameState, delta){
 		if(this.loaded){
 			if(!this.once){
 				this.once = true;
@@ -33,11 +41,11 @@ var gameplay = exports.gameplay = {
 	enter: function(){
 		console.log("enter this one!")
 	},
-	exit:function(){
+	exit: function(){
 	},
-	render:function(gameState, canvas){
+	render: function(gameState, canvas){
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
 	},
-	update:function(gamestate, delta){
+	update: function(gamestate, delta){
 	}
-}
+};

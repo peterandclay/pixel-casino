@@ -1,8 +1,10 @@
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
+var engine = require("./engine.js").getInstance();
 
 function Entity(){
 	this.pos = new $h.Vector(5, 10);
+	this.id = engine.registerNPC(this);
 }
 
 util.Class(Entity, {

@@ -4,11 +4,9 @@ var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
 var Entity = require("./entity");
-engine.load("assests/maps/test_map.json", "json").then(function(img, id){
-	console.log("hey", img)
-	console.log(JSON.parse(img.data))
-});
-engine.init(window.innerWidth, window.innerHeight);
+var init = require("./init");
+init();
+
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
 var test = new Entity();

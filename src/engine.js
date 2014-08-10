@@ -1,7 +1,6 @@
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
-var states = require("./states");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
@@ -12,6 +11,9 @@ var states = require("./states");
 		this.images = {};
 		this.everything = {};
 		this.loadQueue = [];
+		this.NPCS = {};
+		this.groups = {};
+		this.states = {};
 		return this;
 	}
 
@@ -20,7 +22,8 @@ var states = require("./states");
 	}
 	engine.prototype.gameState = {
   		init: function(){
-    		this.state = states.loading;
+  			console.log(engine.getInstance().states)
+    		this.state = engine.getInstance().states.loading;
     		this.state.enter();
     		this.engine = engine.getInstance();
   		},
@@ -39,7 +42,11 @@ var states = require("./states");
 	    	this.state.render(this, canvas);
 	  	}
 	};
+	engine.prototype.addState = function(name, state){
+		this.states[name] = state;
+	}
 	engine.prototype.init = function(width, height){
+		console.log("init")
 		var that = this;
 		this.gameState.init();
 		this.gameWidth = width;
@@ -92,7 +99,20 @@ var states = require("./states");
 	}
 	engine.prototype.startGameLoop = function(){
 		
-	}
+	};
+	engine.prototype.group = function(name, entity){
+		var group = this.groups[name] || [];
+		if(entity){
+			group.push(entity);
+		}
+		return group;
+	};
+	engine.prototype.registerNPC = function(npc){
+		var id = utils.UUID();
+		this.everything[id] = npc;
+		this.NPCS[id] = npc;
+		return id;
+	};
 	engine.prototype.doOther = function(item){
 		var q = Q.defer();
 		var that = this;

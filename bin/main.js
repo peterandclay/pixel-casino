@@ -2888,7 +2888,6 @@ return Q;
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
-var states = require("./states");
 (function(){
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
@@ -2899,6 +2898,9 @@ var states = require("./states");
 		this.images = {};
 		this.everything = {};
 		this.loadQueue = [];
+		this.NPCS = {};
+		this.groups = {};
+		this.states = {};
 		return this;
 	}
 
@@ -2907,7 +2909,8 @@ var states = require("./states");
 	}
 	engine.prototype.gameState = {
   		init: function(){
-    		this.state = states.loading;
+  			console.log(engine.getInstance().states)
+    		this.state = engine.getInstance().states.loading;
     		this.state.enter();
     		this.engine = engine.getInstance();
   		},
@@ -2926,7 +2929,11 @@ var states = require("./states");
 	    	this.state.render(this, canvas);
 	  	}
 	};
+	engine.prototype.addState = function(name, state){
+		this.states[name] = state;
+	}
 	engine.prototype.init = function(width, height){
+		console.log("init")
 		var that = this;
 		this.gameState.init();
 		this.gameWidth = width;
@@ -2979,7 +2986,20 @@ var states = require("./states");
 	}
 	engine.prototype.startGameLoop = function(){
 		
-	}
+	};
+	engine.prototype.group = function(name, entity){
+		var group = this.groups[name] || [];
+		if(entity){
+			group.push(entity);
+		}
+		return group;
+	};
+	engine.prototype.registerNPC = function(npc){
+		var id = utils.UUID();
+		this.everything[id] = npc;
+		this.NPCS[id] = npc;
+		return id;
+	};
 	engine.prototype.doOther = function(item){
 		var q = Q.defer();
 		var that = this;
@@ -3024,12 +3044,14 @@ var states = require("./states");
 	var instance = new engine();
 	module.exports = engine;
 }());
-},{"../lib/headOn.js":2,"./states":9,"./utils.js":10,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./utils.js":11,"q":3}],6:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
+var engine = require("./engine.js").getInstance();
 
 function Entity(){
 	this.pos = new $h.Vector(5, 10);
+	this.id = engine.registerNPC(this);
 }
 
 util.Class(Entity, {
@@ -3048,18 +3070,16 @@ util.Class(Entity, {
 });
 
 module.exports = Entity
-},{"../lib/headOn.js":2,"./utils":10}],7:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./utils":11}],7:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
 var Entity = require("./entity");
-engine.load("assests/maps/test_map.json", "json").then(function(img, id){
-	console.log("hey", img)
-	console.log(JSON.parse(img.data))
-});
-engine.init(window.innerWidth, window.innerHeight);
+var init = require("./init");
+init();
+
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
 var test = new Entity();
@@ -3155,7 +3175,18 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./light":8,"./utils":10,"./utils.js":10}],8:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":9,"./utils":11,"./utils.js":11}],8:[function(require,module,exports){
+var states = require("./states");
+var engine = require("./engine").getInstance();
+module.exports = function(){
+	engine.addState("loading", states.loading);
+	engine.addState("gameplay", states.gameplay);
+	engine.load("assests/maps/test_map.json", "json").then(function(img, id){
+		console.log(JSON.parse(img.data))
+	});
+	engine.init(window.innerWidth, window.innerHeight);
+}
+},{"./engine":5,"./states":10}],9:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3215,9 +3246,10 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":10}],9:[function(require,module,exports){
+},{"../lib/headOn":2,"./config":4,"./utils":11}],10:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
+var engine = require("./engine").getInstance();
 var loading = exports.loading = {
 	enter: function(){
 		var that = this;
@@ -3226,15 +3258,22 @@ var loading = exports.loading = {
 			that.loaded = true;
 		});
 		$h.events.listen("percentLoaded", function(p){
+			that.percentChange = true;
 			that.percent = p;
 		});
+		this.percentChange = true;
 	},
-	exit:function(){
+	exit: function(){
 	},
-	render:function(gameState, canvas){
-		canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
+	render: function(gameState, canvas){
+		if(this.percentChange){
+			canvas.drawRect(canvas.width, canvas.height, 0,0, "black");
+			canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
+			this.percentChange = false;
+		}
+		
 	},
-	update:function(gameState, delta){
+	update: function(gameState, delta){
 		if(this.loaded){
 			if(!this.once){
 				this.once = true;
@@ -3251,15 +3290,16 @@ var gameplay = exports.gameplay = {
 	enter: function(){
 		console.log("enter this one!")
 	},
-	exit:function(){
+	exit: function(){
 	},
-	render:function(gameState, canvas){
+	render: function(gameState, canvas){
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
 	},
-	update:function(gamestate, delta){
+	update: function(gamestate, delta){
 	}
-}
-},{"../lib/headOn":2,"./utils":10}],10:[function(require,module,exports){
+};
+
+},{"../lib/headOn":2,"./engine":5,"./utils":11}],11:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {

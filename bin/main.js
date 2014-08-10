@@ -1,13 +1,4 @@
-<<<<<<< HEAD
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js":[function(require,module,exports){
-//	   __  __			    __					 _	
-//	  / / / /__  ____ _____/ /	____  ____	       (_)____
-//   / /_/ / _ \/ __ `/ __  /_____/ __ \/ __ \	  / / ___/
-//  / __  /  __/ /_/ / /_/ /_____/ /_/ / / / /   / (__  ) 
-// /_/ /_/\___/\__,_/\__,_/	     \____/_/ /_(_)_/ /____/  
-//										     /___/		
-=======
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\Users\\Yawmus\\AppData\\Roaming\\npm\\node_modules\\watchify\\node_modules\\browserify\\node_modules\\process\\browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -72,14 +63,13 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],2:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js":[function(require,module,exports){
 //     __  __         __           _
 //    / / / /__  ____ _____/ /  ____  ____         (_)____
 //   / /_/ / _ \/ __ `/ __  /_____/ __ \/ __ \    / / ___/
 //  / __  /  __/ /_/ / /_/ /_____/ /_/ / / / /   / (__  )
 // /_/ /_/\___/\__,_/\__,_/      \____/_/ /_(_)_/ /____/
 //                         /___/
->>>>>>> a149ca5ffce2106ec585d69c483087082797ef46
 (function(window, undefined){
   "use strict";
   var headOn = (function(){
@@ -973,7 +963,7 @@ process.chdir = function (dir) {
   module.exports = headOn;
   window.headOn = headOn;
 })(window);
-},{}],3:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\node_modules\\q\\q.js":[function(require,module,exports){
 (function (process){
 // vim:ts=4:sts=4:sw=4:
 /*!
@@ -2880,8 +2870,8 @@ return Q;
 
 });
 
-}).call(this,require("h2L/Qg"))
-},{"h2L/Qg":1}],4:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":"C:\\Users\\Yawmus\\AppData\\Roaming\\npm\\node_modules\\watchify\\node_modules\\browserify\\node_modules\\process\\browser.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\config.js":[function(require,module,exports){
 (function(){
 	var config = {
 		NUM_OF_RAYS: 1000
@@ -2894,7 +2884,7 @@ return Q;
 	module.exports = config
 }())
 
-},{}],5:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js":[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
@@ -2995,12 +2985,37 @@ var Q = require("q");
 	var instance = new engine();
 	module.exports = engine;
 }())
-},{"../lib/headOn.js":2,"./utils.js":8,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","q":"F:\\Programming\\Javascript\\pixel-casino\\node_modules\\q\\q.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js":[function(require,module,exports){
+var $h = require("../lib/headOn.js");
+var util = require("./utils");
+
+function Entity(){
+	this.pos = new $h.Vector(5, 10);
+}
+
+util.Class(Entity, {
+	setX: function(x){
+		this.pos.x = x;
+	},
+	setY: function(y){
+		this.pos.y = y;
+	},
+	getX: function(){
+		return this.pos.x;
+	},
+	getY: function(){
+		return this.pos.y;
+	}
+});
+
+module.exports = Entity
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\game.js":[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
+var Entity = require("./entity");
 engine.load("assests/maps/test_map.json", "json").then(function(img, id){
 	console.log("hey", img)
 	console.log(JSON.parse(img.data))
@@ -3008,6 +3023,8 @@ engine.load("assests/maps/test_map.json", "json").then(function(img, id){
 engine.init(window.innerWidth, window.innerHeight);
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
+var test = new Entity();
+console.log(test.getX());
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
@@ -3132,7 +3149,7 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./light":7,"./utils":8,"./utils.js":8}],7:[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./entity":"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js","./light":"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js":[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3187,21 +3204,12 @@ Light.prototype = {
 		}else{
 			ctx.lineTo(this.position.x, this.position.y);
 		}
-<<<<<<< HEAD
-	}());
-	window.headOn = headOn;
-	exports.headOn = headOn;
-})(window);
-},{}],"F:\\Programming\\Javascript\\pixel-casino\\src\\game.js":[function(require,module,exports){
-var $h = require("../lib/headOn.js");
-},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js"}]},{},["F:\\Programming\\Javascript\\pixel-casino\\src\\game.js"]);
-=======
 		ctx.fillStyle = this.color;
 		ctx.fill();
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":8}],8:[function(require,module,exports){
+},{"../lib/headOn":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./config":"F:\\Programming\\Javascript\\pixel-casino\\src\\config.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js":[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {
@@ -3272,5 +3280,4 @@ if (!Object.is) {
     return v1 === v2;
   };
 }
-},{"../lib/headOn.js":2}]},{},[6])
->>>>>>> a149ca5ffce2106ec585d69c483087082797ef46
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js"}]},{},["F:\\Programming\\Javascript\\pixel-casino\\src\\game.js"]);

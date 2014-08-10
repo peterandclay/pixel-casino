@@ -3,6 +3,10 @@ var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
+engine.load("assests/maps/test_map.json", "json").then(function(img, id){
+	console.log("hey", img)
+	console.log(JSON.parse(img.data))
+});
 engine.init(window.innerWidth, window.innerHeight);
 var map = {
 	get:function(x,y){

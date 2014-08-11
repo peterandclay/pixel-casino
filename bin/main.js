@@ -729,12 +729,12 @@ process.chdir = function (dir) {
         var ctx = this.canvas.ctx;
         var camera = this.canvas.camera;
         var coords = camera.unproject(headOn.Vector(x,y));
-        try{
+        //try{
           ctx.drawImage(image,coords.x,coords.y);
-        }
-        catch(e){
-          console.log(image);
-        }
+       // }
+       // catch(e){
+          //console.log(image);
+      //  }
         return this;
       },
       drawLine: function(start, end, color){
@@ -2934,33 +2934,51 @@ var Q = require("q");
 	}
 	engine.prototype.init = function(width, height){
 		var that = this;
+		var q = Q.defer();
 		this.gameState.init();
 		this.gameWidth = width;
 		this.gameHeight = height;
 		this.camera = new $h.Camera(width, height);
 		this.mainCanvas = $h.canvas.create("main", width, height, this.camera);
 		this.mainCanvas.append("body");
-
+		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
+		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
+		this.cameraMove = true;
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
+			q.resolve();
 			$h.events.trigger("assestsLoaded");
 		});
 		$h.update(function(delta){
 			that.gameState.update(that.gameState, delta);
 		});
 		$h.render(function(){
-			that.gameState.render(that.mainCanvas);
+			that.gameState.render(that.buffer);
+			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
+			that.mainCanvas.drawImage(that.mapBuffer.canvas.canvas,0,0);
 		})
 		$h.run();
+		return q.promise;
 	}
 	engine.prototype.registerLevel = function(level) {
 		// body...
 		var id = utils.UUID();
 		level.ID = id;
-		this.levels[name] = leveldata;
+		this.levels[level.name] = level;
 		this.everything[id] = this.levels[level.name];
+		console.log(this.levels)
 	};
+	engine.prototype.getLevel = function(name){
+		return this.levels[name] || this.everything[id];
+	}
+	engine.prototype.renderLevel = function(){
+		if(this.cameraMove){
+			this.currentLevel.render(this.mapBuffer);
+			this.cameraMove = false;
+		}
+		
+	}
 	engine.prototype.loadEverything = function(){
 		this.loading = true;
 		var item;
@@ -3034,19 +3052,21 @@ var Q = require("q");
 		this.loadQueue.push({src:src, content_type:content_type, promise:q})
 		return q.promise;
 	};
+
 	engine.prototype.loadImage = function(src, name){
 		var q = Q.defer();
 		this.loadQueue.push({src:src, image:true, promise:q, name:name});
 		return q.promise;
 	};
 	engine.prototype.loadLevel = function(levelname) {
-		var level = this.everything[levelname] || this.levels[levelname];
+		var level = this.levels[levelname] || this.everything[levelname];
+		console.log( this.levels[levelname])
 		this.currentLevel = level;
 	};
 	var instance = new engine();
 	module.exports = engine;
 }());
-},{"../lib/headOn.js":2,"./utils.js":11,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./utils.js":12,"q":3}],6:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
@@ -3079,7 +3099,7 @@ util.Class(Entity, {
 });
 
 module.exports = Entity
-},{"../lib/headOn.js":2,"./engine.js":5,"./utils":11}],7:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./utils":12}],7:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
@@ -3184,19 +3204,75 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":9,"./utils":11,"./utils.js":11}],8:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":10,"./utils":12,"./utils.js":12}],8:[function(require,module,exports){
 var states = require("./states");
 var engine = require("./engine").getInstance();
+var Level = require("./level.js");
 module.exports = function(){
+	var level = new Level("main");
+	level.addMap("/assets/maps/map_1.json");
+	
+	engine.registerLevel(level);
+	engine.loadLevel("main");
 	engine.addState("loading", states.loading);
 	engine.addState("gameplay", states.gameplay);
 	engine.loadImage("assets/images/guard.png", "guard");
-	engine.load("assets/maps/test_map.json", "json").then(function(img, id){
-		console.log(JSON.parse(img.data))
+	engine.loadImage("assets/images/tile.png", "level_1_map");
+	engine.load("assets/maps/map_1.json", "json").then(function(img, id){
+		JSON.parse(img.data);
 	});
-	engine.init(window.innerWidth, window.innerHeight);
+	engine.init(window.innerWidth, window.innerHeight).then(function(){
+		level.setMap("/assets/maps/map_1.json");
+		
+	});
 }
-},{"./engine":5,"./states":10}],9:[function(require,module,exports){
+},{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){
+var Class = require("./utils").Class;
+var engine = require("./engine").getInstance();
+function Level(name){
+	this.name = name;
+	this.maps = {};
+}
+
+Class(Level, {
+	addMap: function(src){
+		var that = this;
+		this.maps[src] = {
+			loaded:false,
+			src:src
+		};
+		engine.load(src, "text/json").then(function(data){
+			console.log("loaded")
+			console.log(JSON.parse(data.data));
+			that.maps[src].data = JSON.parse(data.data);
+			that.maps[src].loaded = true;
+			that.maps[src].id = data.id;
+			console.log(that.maps[src])
+		});
+
+	},
+	setMap: function(src){
+		var map = this.maps[src];
+		if(!map){
+			throw "Map does not exist";
+		}
+		console.log(map)
+		this.currentMap = map;
+		this.tileSet = map.data.tilesets[0];
+		this.mapdata = map.data.layers[0].data;
+	},
+	render: function(canvas){
+		var jumpx = (this.currentMap.data.canvas.width/this.tileSet.tilewidth);
+		for(var i = 0; i< this.mapdata.length; i++){
+			var y = Math.floor(i/jumpx);
+			var x = i%jumpx;
+			canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*16, y*16, 16,16 );
+		}
+	}
+});
+
+module.exports = Level;
+},{"./engine":5,"./utils":12}],10:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3256,7 +3332,7 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":11}],10:[function(require,module,exports){
+},{"../lib/headOn":2,"./config":4,"./utils":12}],11:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
@@ -3304,14 +3380,16 @@ var gameplay = exports.gameplay = {
 	exit: function(){
 	},
 	render: function(gameState, canvas){
+
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y)
+		//canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y);
+		engine.renderLevel();
 	},
 	update: function(gamestate, delta){
 	}
 };
 
-},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":11}],11:[function(require,module,exports){
+},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":12}],12:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {

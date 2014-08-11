@@ -45,8 +45,10 @@ var gameplay = exports.gameplay = {
 	exit: function(){
 	},
 	render: function(gameState, canvas){
+
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y)
+		//canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y);
+		engine.renderLevel();
 	},
 	update: function(gamestate, delta){
 	}

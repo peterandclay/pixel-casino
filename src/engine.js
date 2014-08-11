@@ -47,33 +47,51 @@ var Q = require("q");
 	}
 	engine.prototype.init = function(width, height){
 		var that = this;
+		var q = Q.defer();
 		this.gameState.init();
 		this.gameWidth = width;
 		this.gameHeight = height;
 		this.camera = new $h.Camera(width, height);
 		this.mainCanvas = $h.canvas.create("main", width, height, this.camera);
 		this.mainCanvas.append("body");
-
+		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
+		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
+		this.cameraMove = true;
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
+			q.resolve();
 			$h.events.trigger("assestsLoaded");
 		});
 		$h.update(function(delta){
 			that.gameState.update(that.gameState, delta);
 		});
 		$h.render(function(){
-			that.gameState.render(that.mainCanvas);
+			that.gameState.render(that.buffer);
+			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
+			that.mainCanvas.drawImage(that.mapBuffer.canvas.canvas,0,0);
 		})
 		$h.run();
+		return q.promise;
 	}
 	engine.prototype.registerLevel = function(level) {
 		// body...
 		var id = utils.UUID();
 		level.ID = id;
-		this.levels[name] = leveldata;
+		this.levels[level.name] = level;
 		this.everything[id] = this.levels[level.name];
+		console.log(this.levels)
 	};
+	engine.prototype.getLevel = function(name){
+		return this.levels[name] || this.everything[id];
+	}
+	engine.prototype.renderLevel = function(){
+		if(this.cameraMove){
+			this.currentLevel.render(this.mapBuffer);
+			this.cameraMove = false;
+		}
+		
+	}
 	engine.prototype.loadEverything = function(){
 		this.loading = true;
 		var item;
@@ -147,13 +165,15 @@ var Q = require("q");
 		this.loadQueue.push({src:src, content_type:content_type, promise:q})
 		return q.promise;
 	};
+
 	engine.prototype.loadImage = function(src, name){
 		var q = Q.defer();
 		this.loadQueue.push({src:src, image:true, promise:q, name:name});
 		return q.promise;
 	};
 	engine.prototype.loadLevel = function(levelname) {
-		var level = this.everything[levelname] || this.levels[levelname];
+		var level = this.levels[levelname] || this.everything[levelname];
+		console.log( this.levels[levelname])
 		this.currentLevel = level;
 	};
 	var instance = new engine();

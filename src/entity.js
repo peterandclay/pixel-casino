@@ -2,8 +2,9 @@ var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
 
-function Entity(){
-	this.pos = new $h.Vector(5, 10);
+function Entity(name, x, y){
+	this.image = engine.getImage(name);
+	this.pos = new $h.Vector(x, y);
 	this.id = engine.registerNPC(this);
 }
 
@@ -19,7 +20,13 @@ util.Class(Entity, {
 	},
 	getY: function(){
 		return this.pos.y;
-	}
+	},
+	getID: function(){
+		return this.id;
+	},
+	getImage: function(){
+		return this.image;
+	})
 });
 
 module.exports = Entity

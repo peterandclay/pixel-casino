@@ -1,6 +1,7 @@
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
+var Entity = require("./entity");
 var loading = exports.loading = {
 	enter: function(){
 		var that = this;
@@ -39,12 +40,13 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		console.log("enter this one!")
+		this.d = new Entity("guard", 200, 200);
 	},
 	exit: function(){
 	},
 	render: function(gameState, canvas){
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
+		canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y)
 	},
 	update: function(gamestate, delta){
 	}

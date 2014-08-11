@@ -26,7 +26,7 @@ util.Class(Entity, {
 	},
 	getImage: function(){
 		return this.image;
-	})
+	}
 });
 
 module.exports = Entity

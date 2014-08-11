@@ -2933,7 +2933,6 @@ var Q = require("q");
 		this.states[name] = state;
 	}
 	engine.prototype.init = function(width, height){
-		console.log("init")
 		var that = this;
 		this.gameState.init();
 		this.gameWidth = width;
@@ -3014,6 +3013,9 @@ var Q = require("q");
 		xhr.send();
 		return q.promise;
 	};
+	engine.prototype.getImage = function(name){
+		return this.images[name] || this.everything[name] || new Image();
+	}
 	engine.prototype.doImage = function(item){
 		var id = utils.UUID();
 		var q = Q.defer();
@@ -3025,7 +3027,7 @@ var Q = require("q");
 			q.resolve();
 			item.promise.resolve({image:i, id:id});
 		}
-		return q;
+		return q.promise;
 	}
 	engine.prototype.load = function(src, content_type){
 		var q = Q.defer();
@@ -3049,8 +3051,9 @@ var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
 
-function Entity(){
-	this.pos = new $h.Vector(5, 10);
+function Entity(name, x, y){
+	this.image = engine.getImage(name);
+	this.pos = new $h.Vector(x, y);
 	this.id = engine.registerNPC(this);
 }
 
@@ -3066,6 +3069,12 @@ util.Class(Entity, {
 	},
 	getY: function(){
 		return this.pos.y;
+	},
+	getID: function(){
+		return this.id;
+	},
+	getImage: function(){
+		return this.image;
 	}
 });
 
@@ -3181,7 +3190,8 @@ var engine = require("./engine").getInstance();
 module.exports = function(){
 	engine.addState("loading", states.loading);
 	engine.addState("gameplay", states.gameplay);
-	engine.load("assests/maps/test_map.json", "json").then(function(img, id){
+	engine.loadImage("assets/images/guard.png", "guard");
+	engine.load("assets/maps/test_map.json", "json").then(function(img, id){
 		console.log(JSON.parse(img.data))
 	});
 	engine.init(window.innerWidth, window.innerHeight);
@@ -3250,6 +3260,7 @@ Light.prototype = {
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
+var Entity = require("./entity");
 var loading = exports.loading = {
 	enter: function(){
 		var that = this;
@@ -3288,18 +3299,19 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		console.log("enter this one!")
+		this.d = new Entity("guard", 200, 200);
 	},
 	exit: function(){
 	},
 	render: function(gameState, canvas){
 		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
+		canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y)
 	},
 	update: function(gamestate, delta){
 	}
 };
 
-},{"../lib/headOn":2,"./engine":5,"./utils":11}],11:[function(require,module,exports){
+},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":11}],11:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {

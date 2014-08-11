@@ -46,7 +46,6 @@ var Q = require("q");
 		this.states[name] = state;
 	}
 	engine.prototype.init = function(width, height){
-		console.log("init")
 		var that = this;
 		this.gameState.init();
 		this.gameWidth = width;
@@ -127,6 +126,9 @@ var Q = require("q");
 		xhr.send();
 		return q.promise;
 	};
+	engine.prototype.getImage = function(name){
+		return this.images[name] || this.everything[name] || new Image();
+	}
 	engine.prototype.doImage = function(item){
 		var id = utils.UUID();
 		var q = Q.defer();
@@ -138,7 +140,7 @@ var Q = require("q");
 			q.resolve();
 			item.promise.resolve({image:i, id:id});
 		}
-		return q;
+		return q.promise;
 	}
 	engine.prototype.load = function(src, content_type){
 		var q = Q.defer();

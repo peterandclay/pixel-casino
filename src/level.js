@@ -1,5 +1,6 @@
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
+var $h = require("../lib/headOn")
 function Level(name){
 	this.name = name;
 	this.maps = {};
@@ -37,7 +38,10 @@ Class(Level, {
 		for(var i = 0; i< this.mapdata.length; i++){
 			var y = Math.floor(i/jumpx);
 			var x = i%jumpx;
-			canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*16, y*16, 16,16 );
+			if(canvas.canvas.camera.inView(x*96,y*96)){
+				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*96, y*96, 96,96 );
+			}
+			
 		}
 	}
 });

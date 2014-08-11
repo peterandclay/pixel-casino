@@ -883,7 +883,16 @@ process.chdir = function (dir) {
         return this;
       },
       inView: function(vec){
-        if(vec.x >= this.position.x && vec.x <= this.position.x + this.width *this.zoomAmt && vec.y >= this.position.y && vec.y <= this.position.y + this.height*this.zoomAmt){
+        var x;
+        var y;
+        if(arguments.length === 2){
+          x = arguments[0];
+          y = arguments[1]
+        }else{
+          x = vec.x;
+          y = vec.y;
+        }
+        if(x >= this.position.x && x <= this.position.x + this.width *this.zoomAmt && y >= this.position.y && y <= this.position.y + this.height*this.zoomAmt){
           return true;
         }else{
           return false;
@@ -2955,12 +2964,18 @@ var Q = require("q");
 		});
 		$h.render(function(){
 			that.gameState.render(that.buffer);
-			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
 			that.mainCanvas.drawImage(that.mapBuffer.canvas.canvas,0,0);
+			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
+			
 		})
 		$h.run();
 		return q.promise;
-	}
+	};
+	engine.prototype.clearBuffers = function(){
+		this.mainCanvas.canvas.canvas.width = this.mainCanvas.width;;
+		this.buffer.canvas.canvas.width = this.buffer.width;;
+		this.mapBuffer.canvas.canvas.width = this.mapBuffer.width;
+	};
 	engine.prototype.registerLevel = function(level) {
 		// body...
 		var id = utils.UUID();
@@ -2973,10 +2988,10 @@ var Q = require("q");
 		return this.levels[name] || this.everything[id];
 	}
 	engine.prototype.renderLevel = function(){
-		if(this.cameraMove){
+		//if(this.cameraMove){
 			this.currentLevel.render(this.mapBuffer);
-			this.cameraMove = false;
-		}
+			//this.cameraMove = false;
+		//}
 		
 	}
 	engine.prototype.loadEverything = function(){
@@ -3229,6 +3244,7 @@ module.exports = function(){
 },{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
+var $h = require("../lib/headOn")
 function Level(name){
 	this.name = name;
 	this.maps = {};
@@ -3266,13 +3282,16 @@ Class(Level, {
 		for(var i = 0; i< this.mapdata.length; i++){
 			var y = Math.floor(i/jumpx);
 			var x = i%jumpx;
-			canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*16, y*16, 16,16 );
+			if(canvas.canvas.camera.inView(x*96,y*96)){
+				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*96, y*96, 96,96 );
+			}
+			
 		}
 	}
 });
 
 module.exports = Level;
-},{"./engine":5,"./utils":12}],10:[function(require,module,exports){
+},{"../lib/headOn":2,"./engine":5,"./utils":12}],10:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3375,15 +3394,17 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		this.d = new Entity("guard", 200, 200);
+		this.d = new Entity("guard", 500, 500);
+		engine.clearBuffers();
 	},
 	exit: function(){
 	},
 	render: function(gameState, canvas){
-
-		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		//canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y);
 		engine.renderLevel();
+		//canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
+		
+		canvas.canvas.ctx.drawImage(this.d.image, this.d.pos.x, this.d.pos.y, 96, 96);
+		
 	},
 	update: function(gamestate, delta){
 	}

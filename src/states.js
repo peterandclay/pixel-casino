@@ -40,15 +40,17 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		this.d = new Entity("guard", 200, 200);
+		this.d = new Entity("guard", 500, 500);
+		engine.clearBuffers();
 	},
 	exit: function(){
 	},
 	render: function(gameState, canvas){
-
-		canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		//canvas.drawImage(this.d.image, this.d.pos.x, this.d.pos.y);
 		engine.renderLevel();
+		//canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
+		
+		canvas.canvas.ctx.drawImage(this.d.image, this.d.pos.x, this.d.pos.y, 96, 96);
+		
 	},
 	update: function(gamestate, delta){
 	}

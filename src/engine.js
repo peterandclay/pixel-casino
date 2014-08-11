@@ -68,12 +68,18 @@ var Q = require("q");
 		});
 		$h.render(function(){
 			that.gameState.render(that.buffer);
-			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
 			that.mainCanvas.drawImage(that.mapBuffer.canvas.canvas,0,0);
+			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
+			
 		})
 		$h.run();
 		return q.promise;
-	}
+	};
+	engine.prototype.clearBuffers = function(){
+		this.mainCanvas.canvas.canvas.width = this.mainCanvas.width;;
+		this.buffer.canvas.canvas.width = this.buffer.width;;
+		this.mapBuffer.canvas.canvas.width = this.mapBuffer.width;
+	};
 	engine.prototype.registerLevel = function(level) {
 		// body...
 		var id = utils.UUID();
@@ -86,10 +92,10 @@ var Q = require("q");
 		return this.levels[name] || this.everything[id];
 	}
 	engine.prototype.renderLevel = function(){
-		if(this.cameraMove){
+		//if(this.cameraMove){
 			this.currentLevel.render(this.mapBuffer);
-			this.cameraMove = false;
-		}
+			//this.cameraMove = false;
+		//}
 		
 	}
 	engine.prototype.loadEverything = function(){

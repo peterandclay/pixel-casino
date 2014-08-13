@@ -10,23 +10,31 @@ util.Class(Player, Entity, {
 	update: function(delta){
 
 		var delta = delta/1000;
-		this.dx =0;
-		this.dy = 0;
-		if(engine.controls.up)
+		this.dx = this.dy = 0;
+		if(engine.controls.up){
+			if(engine.controls.down)
+				this.dy = 0;
+			else
+				this.dy = -1
+		}
+		else if(engine.controls.down)
 			this.dy = 1;
-		if(engine.controls.down)
-			this.dy = -1;
-		if(engine.controls.left)
-			this.dx = -1;
-		if(engine.controls.right)
+
+		if(engine.controls.left){
+			if(engine.controls.right)
+				this.dx = 0;
+			else
+				this.dx = -1;
+		}
+		else if(engine.controls.right)
 			this.dx = 1;
 		
 
 
 		this.pos.x += this.dx * delta * 300;
 		this.pos.y += this.dy * delta * 300;
-		engine.camera.moveTo(this.pos);
 
+		engine.camera.moveTo(this.pos);
 	},
 	render: function(canvas){
 		Entity.prototype.render.call(this, canvas);

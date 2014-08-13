@@ -3172,6 +3172,11 @@ module.exports = function(){
 			engine.controls[engine.keyMap[e.which]] = false;
 			engine.keys[e.which] = false;
 		});
+		window.addEventListener("mousemove", function(e){
+			engine.mouse = engine.mouse || new $h.Vector(0,0);
+			engine.mouse.x = e.x;
+			engine.mouse.y = e.y;
+		});
 	});
 
 }

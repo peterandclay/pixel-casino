@@ -1,10 +1,12 @@
+var util = require("./utils");
+var engine = require("./engine.js").getInstance();
 var Entity = require("./entity.js");
 
 function Player(name, x, y){
 	Entity.call(this, "player", 5, 10);
 }
 
-util.Class(Player, {
+util.Class(Player, Entity, {
 	update: function(delta){
 		if(engine.controls.up)
 			this.dy = 1;
@@ -19,7 +21,7 @@ util.Class(Player, {
 		this.pos.y += this.dy * 10;
 	},
 	render: function(canvas){
-		canvas.drawImage(this.image, x, y)
+		Entity.prototype.render.call(this, canvas);
 	}
 });
 

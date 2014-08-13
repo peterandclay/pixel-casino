@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"C:\\Users\\Yawmus\\AppData\\Roaming\\npm\\node_modules\\watchify\\node_modules\\browserify\\node_modules\\process\\browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -63,7 +63,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],2:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js":[function(require,module,exports){
 //     __  __         __           _
 //    / / / /__  ____ _____/ /  ____  ____         (_)____
 //   / /_/ / _ \/ __ `/ __  /_____/ __ \/ __ \    / / ___/
@@ -972,7 +972,7 @@ process.chdir = function (dir) {
   module.exports = headOn;
   window.headOn = headOn;
 })(window);
-},{}],3:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\node_modules\\q\\q.js":[function(require,module,exports){
 (function (process){
 // vim:ts=4:sts=4:sw=4:
 /*!
@@ -2880,7 +2880,7 @@ return Q;
 });
 
 }).call(this,require('_process'))
-},{"_process":1}],4:[function(require,module,exports){
+},{"_process":"C:\\Users\\Yawmus\\AppData\\Roaming\\npm\\node_modules\\watchify\\node_modules\\browserify\\node_modules\\process\\browser.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\config.js":[function(require,module,exports){
 (function(){
 	var config = {
 		NUM_OF_RAYS: 1000
@@ -2893,7 +2893,7 @@ return Q;
 	module.exports = config
 }())
 
-},{}],5:[function(require,module,exports){
+},{}],"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js":[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
@@ -3087,7 +3087,7 @@ var Q = require("q");
 	var instance = new engine();
 	module.exports = engine;
 }());
-},{"../lib/headOn.js":2,"./utils.js":12,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","q":"F:\\Programming\\Javascript\\pixel-casino\\node_modules\\q\\q.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js":[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
@@ -3118,9 +3118,6 @@ util.Class(Entity, {
 		return this.image;
 	},
 	update: function(delta){
-		if(engine.controls.up){
-			this.pos.x += 200 * (delta/1000);
-		}
 	},
 	render: function(canvas){
 		canvas.drawImage(this.image, this.pos.x, this.pos.y)
@@ -3131,50 +3128,24 @@ util.Class(Entity, {
 });
 
 module.exports = Entity
-},{"../lib/headOn.js":2,"./engine.js":5,"./utils":12}],7:[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\game.js":[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
 var Entity = require("./entity");
+var Player = require("./player");
 var init = require("./init");
 init();
 
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
-var test = new Entity();
-console.log(test.getX());
+var player = new Player();
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
 var keys ={};
-var player = {
-	position: new $h.Vector(50,50),
-	angle:0,
-	speed: 200,
-	render: function(canvas){
-		canvas.drawRect(16,16, this.position.x, this.position.y, "blue");
-	},
-	update: function(delta){
-		var a =this.position.sub(mouse);
-		this.angle = Math.atan2(a.y, a.x) + Math.PI;
-		if(keys[37]){
-			
-		}
-		if(keys[38]){
-			this.position.x += Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y += Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-		if(keys[39]){
-			
-		}
-		if(keys[40]){
-			this.position.x -= Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y -= Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-	}
-}
 var map = {
 	get:function(x,y){
 		x = Math.floor(x/this.size);
@@ -3236,7 +3207,7 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":10,"./utils":12,"./utils.js":12}],8:[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./entity":"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js","./init":"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js","./light":"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js","./player":"F:\\Programming\\Javascript\\pixel-casino\\src\\player.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js":[function(require,module,exports){
 var states = require("./states");
 var engine = require("./engine").getInstance();
 var Level = require("./level.js");
@@ -3267,7 +3238,7 @@ module.exports = function(){
 		});
 	});
 }
-},{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){
+},{"./engine":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./level.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js","./states":"F:\\Programming\\Javascript\\pixel-casino\\src\\states.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js":[function(require,module,exports){
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var $h = require("../lib/headOn")
@@ -3317,7 +3288,7 @@ Class(Level, {
 });
 
 module.exports = Level;
-},{"../lib/headOn":2,"./engine":5,"./utils":12}],10:[function(require,module,exports){
+},{"../lib/headOn":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js":[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3377,7 +3348,36 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":12}],11:[function(require,module,exports){
+},{"../lib/headOn":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./config":"F:\\Programming\\Javascript\\pixel-casino\\src\\config.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\player.js":[function(require,module,exports){
+var util = require("./utils");
+var engine = require("./engine.js").getInstance();
+var Entity = require("./entity.js");
+
+function Player(name, x, y){
+	Entity.call(this, "player", 5, 10);
+}
+
+util.Class(Player, Entity, {
+	update: function(delta){
+		if(engine.controls.up)
+			this.dy = 1;
+		if(engine.controls.down)
+			this.dy = -1;
+		if(engine.controls.left)
+			this.dx = -1;
+		if(engine.controls.right)
+			this.dx = 1;
+
+		this.pos.x += this.dx * 10;
+		this.pos.y += this.dy * 10;
+	},
+	render: function(canvas){
+		Entity.prototype.render.call(this, canvas);
+	}
+});
+
+module.exports = Player
+},{"./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./entity.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\states.js":[function(require,module,exports){
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
@@ -3445,7 +3445,7 @@ var gameplay = exports.gameplay = {
 	}
 };
 
-},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":12}],12:[function(require,module,exports){
+},{"../lib/headOn":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./entity":"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js":[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {
@@ -3516,4 +3516,4 @@ if (!Object.is) {
     return v1 === v2;
   };
 }
-},{"../lib/headOn.js":2}]},{},[7]);
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js"}]},{},["F:\\Programming\\Javascript\\pixel-casino\\src\\game.js"]);

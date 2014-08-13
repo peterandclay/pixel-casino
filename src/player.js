@@ -17,8 +17,8 @@ util.Class(Player, Entity, {
 		if(engine.controls.right)
 			this.dx = 1;
 
-		this.pos.x += this.dx * 10;
-		this.pos.y += this.dy * 10;
+		this.pos.x += this.dx * delta * 100;
+		this.pos.y += this.dy * delta * 100;
 	},
 	render: function(canvas){
 		Entity.prototype.render.call(this, canvas);

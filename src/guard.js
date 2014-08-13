@@ -1,7 +1,7 @@
 var Entity = require("./entity.js");
 
 function Guard(){
-	Entity.call(this, "guard", 5, 10);
+	Entity.call(this, "gard", 59, 10);
 }
 
 util.Class(Guard, Entity, {

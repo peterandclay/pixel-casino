@@ -3,14 +3,11 @@ var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
-var Entity = require("./entity");
-var Player = require("./player");
 var init = require("./init");
 init();
 
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
-var player = new Player();
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"

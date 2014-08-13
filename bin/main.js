@@ -3134,14 +3134,11 @@ var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
-var Entity = require("./entity");
-var Player = require("./player");
 var init = require("./init");
 init();
 
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
-var player = new Player();
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
@@ -3207,10 +3204,11 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./entity":"F:\\Programming\\Javascript\\pixel-casino\\src\\entity.js","./init":"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js","./light":"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js","./player":"F:\\Programming\\Javascript\\pixel-casino\\src\\player.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js":[function(require,module,exports){
+},{"../lib/headOn.js":"F:\\Programming\\Javascript\\pixel-casino\\lib\\headOn.js","./engine.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./init":"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js","./light":"F:\\Programming\\Javascript\\pixel-casino\\src\\light.js","./utils":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js","./utils.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\utils.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\init.js":[function(require,module,exports){
 var states = require("./states");
 var engine = require("./engine").getInstance();
 var Level = require("./level.js");
+var Player = require("./player");
 module.exports = function(){
 	var level = new Level("main");
 	level.addMap("/assets/maps/map_1.json");
@@ -3220,11 +3218,13 @@ module.exports = function(){
 	engine.addState("loading", states.loading);
 	engine.addState("gameplay", states.gameplay);
 	engine.loadImage("assets/images/guard.png", "guard");
+	engine.loadImage("assets/images/player.png", "player");
 	engine.loadImage("assets/images/tile.png", "level_1_map");
 	engine.load("assets/maps/map_1.json", "json").then(function(img, id){
 		JSON.parse(img.data);
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
+		var player = new Player();
 		level.setMap("/assets/maps/map_1.json");
 		console.log(engine.keyMap)
 		window.addEventListener("keydown", function(e){
@@ -3238,7 +3238,7 @@ module.exports = function(){
 		});
 	});
 }
-},{"./engine":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./level.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js","./states":"F:\\Programming\\Javascript\\pixel-casino\\src\\states.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js":[function(require,module,exports){
+},{"./engine":"F:\\Programming\\Javascript\\pixel-casino\\src\\engine.js","./level.js":"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js","./player":"F:\\Programming\\Javascript\\pixel-casino\\src\\player.js","./states":"F:\\Programming\\Javascript\\pixel-casino\\src\\states.js"}],"F:\\Programming\\Javascript\\pixel-casino\\src\\level.js":[function(require,module,exports){
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var $h = require("../lib/headOn")
@@ -3368,8 +3368,8 @@ util.Class(Player, Entity, {
 		if(engine.controls.right)
 			this.dx = 1;
 
-		this.pos.x += this.dx * 10;
-		this.pos.y += this.dy * 10;
+		this.pos.x += this.dx * delta * 100;
+		this.pos.y += this.dy * delta * 100;
 	},
 	render: function(canvas){
 		Entity.prototype.render.call(this, canvas);

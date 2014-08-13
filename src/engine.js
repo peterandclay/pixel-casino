@@ -51,6 +51,7 @@ var Q = require("q");
 	engine.prototype.init = function(width, height){
 		var that = this;
 		var q = Q.defer();
+		this.cameraMoved = false;
 		this.gameState.init();
 		this.gameWidth = width;
 		this.gameHeight = height;
@@ -73,12 +74,17 @@ var Q = require("q");
 			that.gameState.update(delta);
 		});
 		$h.render(function(){
+
 			that.gameState.render(that.buffer);
-			that.mainCanvas.drawImage(that.mapBuffer.canvas.canvas,0,0);
-			that.mainCanvas.drawImage(that.buffer.canvas.canvas,0,0);
+			that.mainCanvas.canvas.ctx.drawImage(that.mapBuffer.canvas.canvas,0,0);
+			that.mainCanvas.canvas.ctx.drawImage(that.buffer.canvas.canvas,0,0);
 			
 		})
 		$h.run();
+		$h.events.listen("cameraMoved", function(){
+			console.log("move")
+			that.cameraMoved = true;
+		})
 		return q.promise;
 	};
 	engine.prototype.clearBuffers = function(){
@@ -98,10 +104,12 @@ var Q = require("q");
 		return this.levels[name] || this.everything[id];
 	}
 	engine.prototype.renderLevel = function(){
-		//if(this.cameraMove){
+		if(this.cameraMoved){
+			this.mapBuffer.canvas.ctx.fillStyle="black";
+			this.mapBuffer.canvas.ctx.fillRect(0,0,this.mainCanvas.width,this.mainCanvas.height);
 			this.currentLevel.render(this.mapBuffer);
-			//this.cameraMove = false;
-		//}
+			this.cameraMoved = false;
+		}
 		
 	}
 	engine.prototype.loadEverything = function(){

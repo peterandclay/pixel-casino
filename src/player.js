@@ -25,6 +25,7 @@ util.Class(Player, Entity, {
 
 		this.pos.x += this.dx * delta * 100;
 		this.pos.y += this.dy * delta * 100;
+		engine.camera.moveTo(this.pos);
 
 	},
 	render: function(canvas){

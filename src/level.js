@@ -38,8 +38,9 @@ Class(Level, {
 		for(var i = 0; i< this.mapdata.length; i++){
 			var y = Math.floor(i/jumpx);
 			var x = i%jumpx;
-			if(canvas.canvas.camera.inView(x*96,y*96)){
-				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,x*96, y*96, 96,96 );
+			if(engine.camera.inView(x*96, y*96) || engine.camera.inView(x*96 +96, y*96 +96)){
+				var coords = engine.camera.unproject(headOn.Vector(x*96,y*96));
+				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,coords.x, coords.y, 96,96 );
 			}
 			
 		}

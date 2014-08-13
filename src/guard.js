@@ -5,6 +5,12 @@ function Guard(){
 }
 
 util.Class(Guard, Entity, {
+	isActive: function(){
+		return this.active;
+	}
+	setActive: function(active){
+		this.active = active;
+	}
 
 });
 

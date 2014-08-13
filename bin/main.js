@@ -3087,12 +3087,13 @@ var Q = require("q");
 	var instance = new engine();
 	module.exports = engine;
 }());
-},{"../lib/headOn.js":2,"./utils.js":12,"q":3}],6:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./utils.js":13,"q":3}],6:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
 
 function Entity(name, x, y){
+	console.log(name)
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
 	this.id = engine.registerEntity(this);
@@ -3118,9 +3119,6 @@ util.Class(Entity, {
 		return this.image;
 	},
 	update: function(delta){
-		if(engine.controls.up){
-			this.pos.x += 200 * (delta/1000);
-		}
 	},
 	render: function(canvas){
 		canvas.drawImage(this.image, this.pos.x, this.pos.y)
@@ -3131,50 +3129,24 @@ util.Class(Entity, {
 });
 
 module.exports = Entity
-},{"../lib/headOn.js":2,"./engine.js":5,"./utils":12}],7:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./utils":13}],7:[function(require,module,exports){
 var $h = require("../lib/headOn.js");
 var engine = require("./engine.js")();
 var Class = require("./utils.js").Class;
 var Light = require("./light");
 var ray = require("./utils").ray;
 var Entity = require("./entity");
+var Player = require("./player");
 var init = require("./init");
 init();
 
 var mouse = new $h.Vector(0,0);
 var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
-var test = new Entity();
-console.log(test.getX());
+
 mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
 var keys ={};
-var player = {
-	position: new $h.Vector(50,50),
-	angle:0,
-	speed: 200,
-	render: function(canvas){
-		canvas.drawRect(16,16, this.position.x, this.position.y, "blue");
-	},
-	update: function(delta){
-		var a =this.position.sub(mouse);
-		this.angle = Math.atan2(a.y, a.x) + Math.PI;
-		if(keys[37]){
-			
-		}
-		if(keys[38]){
-			this.position.x += Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y += Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-		if(keys[39]){
-			
-		}
-		if(keys[40]){
-			this.position.x -= Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y -= Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-	}
-}
 var map = {
 	get:function(x,y){
 		x = Math.floor(x/this.size);
@@ -3236,10 +3208,11 @@ $h.run();
 
 
 
-},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":10,"./utils":12,"./utils.js":12}],8:[function(require,module,exports){
+},{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":10,"./player":11,"./utils":13,"./utils.js":13}],8:[function(require,module,exports){
 var states = require("./states");
 var engine = require("./engine").getInstance();
 var Level = require("./level.js");
+var Player = require("./player");
 module.exports = function(){
 	var level = new Level("main");
 	level.addMap("/assets/maps/map_1.json");
@@ -3255,7 +3228,6 @@ module.exports = function(){
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
 		level.setMap("/assets/maps/map_1.json");
-		console.log(engine.keyMap)
 		window.addEventListener("keydown", function(e){
 			engine.controls[engine.keyMap[e.which]] = true;
 			engine.keys[e.which] = true;
@@ -3265,9 +3237,11 @@ module.exports = function(){
 			engine.controls[engine.keyMap[e.which]] = false;
 			engine.keys[e.which] = false;
 		});
+		var player = new Player();
 	});
+
 }
-},{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){
+},{"./engine":5,"./level.js":9,"./player":11,"./states":12}],9:[function(require,module,exports){
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var $h = require("../lib/headOn")
@@ -3317,7 +3291,7 @@ Class(Level, {
 });
 
 module.exports = Level;
-},{"../lib/headOn":2,"./engine":5,"./utils":12}],10:[function(require,module,exports){
+},{"../lib/headOn":2,"./engine":5,"./utils":13}],10:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var ray = require("./utils").ray;
 var config = require("./config");
@@ -3377,7 +3351,36 @@ Light.prototype = {
 	}
 
 }
-},{"../lib/headOn":2,"./config":4,"./utils":12}],11:[function(require,module,exports){
+},{"../lib/headOn":2,"./config":4,"./utils":13}],11:[function(require,module,exports){
+var util = require("./utils");
+var engine = require("./engine.js").getInstance();
+var Entity = require("./entity.js");
+
+function Player(name, x, y){
+	Entity.call(this, "player", 5, 10);
+}
+
+util.Class(Player, Entity, {
+	update: function(delta){
+		var delta = delta/1000;
+		if(engine.controls.up)
+			this.dy = 1;
+		if(engine.controls.down)
+			this.dy = -1;
+		if(engine.controls.left)
+			this.dx = -1;
+		if(engine.controls.right)
+			this.dx = 1;
+		this.pos.x += this.dx * 10 * delta;
+		this.pos.y += this.dy * 10 * delta;
+	},
+	render: function(canvas){
+		Entity.prototype.render.call(this, canvas);
+	}
+});
+
+module.exports = Player
+},{"./engine.js":5,"./entity.js":6,"./utils":13}],12:[function(require,module,exports){
 var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
@@ -3437,7 +3440,9 @@ var gameplay = exports.gameplay = {
 		var len = engine.entities.length;
 		var en;
 		for(var i=0; i<len; i++){
+
 			en = engine.entities[i];
+			//console.log(en)
 			if(en.isActive()){
 				en.update(delta);
 			}
@@ -3445,7 +3450,7 @@ var gameplay = exports.gameplay = {
 	}
 };
 
-},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":12}],12:[function(require,module,exports){
+},{"../lib/headOn":2,"./engine":5,"./entity":6,"./utils":13}],13:[function(require,module,exports){
 $h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {

@@ -1,6 +1,7 @@
 var states = require("./states");
 var engine = require("./engine").getInstance();
 var Level = require("./level.js");
+var Player = require("./player");
 module.exports = function(){
 	var level = new Level("main");
 	level.addMap("/assets/maps/map_1.json");
@@ -16,7 +17,6 @@ module.exports = function(){
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
 		level.setMap("/assets/maps/map_1.json");
-		console.log(engine.keyMap)
 		window.addEventListener("keydown", function(e){
 			engine.controls[engine.keyMap[e.which]] = true;
 			engine.keys[e.which] = true;
@@ -26,5 +26,7 @@ module.exports = function(){
 			engine.controls[engine.keyMap[e.which]] = false;
 			engine.keys[e.which] = false;
 		});
+		var player = new Player();
 	});
+
 }

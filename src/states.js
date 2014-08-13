@@ -57,7 +57,9 @@ var gameplay = exports.gameplay = {
 		var len = engine.entities.length;
 		var en;
 		for(var i=0; i<len; i++){
+
 			en = engine.entities[i];
+			//console.log(en)
 			if(en.isActive()){
 				en.update(delta);
 			}

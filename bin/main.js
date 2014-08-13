@@ -2910,9 +2910,11 @@ var Q = require("q");
 		this.NPCS = {};
 		this.groups = {};
 		this.states = {};
+		this.keyMap = {};
+		this.controls = {};
+		this.keys = {};
 		return this;
 	}
-
 	engine.getInstance = function(){
 		return engine.prototype._singletonInstance;
 	}
@@ -2953,6 +2955,9 @@ var Q = require("q");
 		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
 		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
 		this.cameraMove = true;
+		this.load("keymap_default.json").then(function(data){
+			engine.keyMap = JSON.parse(data.data);
+		});
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
@@ -3238,7 +3243,16 @@ module.exports = function(){
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
 		level.setMap("/assets/maps/map_1.json");
-		
+		console.log(engine.keyMap)
+		window.addEventListener("keydown", function(e){
+			engine.controls[engine.keyMap[e.which]] = true;
+			engine.keys[e.which] = true;
+			console.log(engine.controls, engine.keys);
+		});
+		window.addEventListener("keyup", function(e){
+			engine.controls[engine.keyMap[e.which]] = false;
+			engine.keys[e.which] = false;
+		});
 	});
 }
 },{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){

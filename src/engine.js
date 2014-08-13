@@ -14,9 +14,11 @@ var Q = require("q");
 		this.NPCS = {};
 		this.groups = {};
 		this.states = {};
+		this.keyMap = {};
+		this.controls = {};
+		this.keys = {};
 		return this;
 	}
-
 	engine.getInstance = function(){
 		return engine.prototype._singletonInstance;
 	}
@@ -57,6 +59,9 @@ var Q = require("q");
 		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
 		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
 		this.cameraMove = true;
+		this.load("keymap_default.json").then(function(data){
+			engine.keyMap = JSON.parse(data.data);
+		});
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;

@@ -12,13 +12,13 @@ util.Class(Player, Entity, {
 		var delta = delta/1000;
 		this.dx = this.dy = 0;
 		if(engine.controls.up)
-			this.dy = 1;
-		if(engine.controls.down)
 			this.dy = -1;
+		if(engine.controls.down)
+			this.dy = 1;
 		if(engine.controls.left)
-			this.dx = 1;
-		if(engine.controls.right)
 			this.dx = -1;
+		if(engine.controls.right)
+			this.dx = 1;
 		
 
 

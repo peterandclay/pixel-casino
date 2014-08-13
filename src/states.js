@@ -2,6 +2,7 @@ var $h = require("../lib/headOn");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var Entity = require("./entity");
+var Guard = require("./guard");
 var loading = exports.loading = {
 	enter: function(){
 		var that = this;
@@ -34,8 +35,9 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		this.d = new Entity("guard", 500, 500);
+		this.d = new Guard(500, 500);
 		engine.clearBuffers();
+		this.last = 0;
 	},
 	exit: function(){
 	},
@@ -54,14 +56,23 @@ var gameplay = exports.gameplay = {
 		
 	},
 	update: function(gamestate, delta){
+		this.last += delta;
 		var len = engine.entities.length;
 		var en;
+		var think = false;
+		if(this.last  >= 100){
+			think = true;
+			this.last = 0;
+		}
 		for(var i=0; i<len; i++){
 
 			en = engine.entities[i];
 			//console.log(en)
 			if(en.isActive()){
 				en.update(delta);
+				if(think){
+					en.think();
+				}
 			}
 		}
 	}

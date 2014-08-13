@@ -3,7 +3,6 @@ var util = require("./utils");
 var engine = require("./engine.js").getInstance();
 
 function Entity(name, x, y){
-	console.log(name)
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
 	this.id = engine.registerEntity(this);
@@ -35,7 +34,11 @@ util.Class(Entity, {
 	},
 	isActive: function(){
 		return true;
-	}
+	}, 
+	at: function(vec){
+		return Math.abs(vec.x - this.pos.x) <= 20 && Math.abs(vec.y - this.pos.y) <= 20;
+	},
+	think: function(){}
 });
 
 module.exports = Entity

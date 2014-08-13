@@ -2956,7 +2956,7 @@ var Q = require("q");
 		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
 		this.cameraMove = true;
 		this.load("keymap_default.json").then(function(data){
-			engine.keyMap = JSON.parse(data.data);
+			that.keyMap = JSON.parse(data.data);
 		});
 		this.loadEverything().then(function(){
 			this.loading = false;

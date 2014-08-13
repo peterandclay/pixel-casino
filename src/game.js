@@ -15,32 +15,6 @@ mask.canvas.canvas.style.position = "absolute";
 mask.canvas.canvas.style.top = "0"
 mask.canvas.canvas.style.left = "0"
 var keys ={};
-var player = {
-	position: new $h.Vector(50,50),
-	angle:0,
-	speed: 200,
-	render: function(canvas){
-		canvas.drawRect(16,16, this.position.x, this.position.y, "blue");
-	},
-	update: function(delta){
-		var a =this.position.sub(mouse);
-		this.angle = Math.atan2(a.y, a.x) + Math.PI;
-		if(keys[37]){
-			
-		}
-		if(keys[38]){
-			this.position.x += Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y += Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-		if(keys[39]){
-			
-		}
-		if(keys[40]){
-			this.position.x -= Math.cos(this.angle) * (delta/1000) * this.speed;
-			this.position.y -= Math.sin(this.angle) * (delta/1000) * this.speed;
-		}
-	}
-}
 var map = {
 	get:function(x,y){
 		x = Math.floor(x/this.size);

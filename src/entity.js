@@ -30,6 +30,10 @@ util.Class(Entity, {
 	update: function(delta){
 	},
 	render: function(canvas){
+		canvas.drawImage(this.image, this.pos.x, this.pos.y)
+	},
+	isActive: function(){
+		return true;
 	}
 });
 

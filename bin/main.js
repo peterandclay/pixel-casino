@@ -2908,7 +2908,7 @@ var Q = require("q");
 		this.everything = {};
 		this.loadQueue = [];
 		this.NPCS = {};
-		this.entities = {};
+		this.entities = [];
 		this.groups = {};
 		this.states = {};
 		this.keyMap = {};
@@ -3035,7 +3035,7 @@ var Q = require("q");
 	engine.prototype.registerEntity = function(npc){
 		var id = utils.UUID();
 		this.everything[id] = npc;
-		this.entities[id] = npc;
+		this.entities.push(npc);
 		return id;
 	};
 	engine.prototype.doOther = function(item){
@@ -3118,10 +3118,15 @@ util.Class(Entity, {
 		return this.image;
 	},
 	update: function(delta){
-		
+		if(engine.controls.up){
+			this.pos.x += 200 * (delta/1000);
+		}
 	},
 	render: function(canvas){
-
+		canvas.drawImage(this.image, this.pos.x, this.pos.y)
+	},
+	isActive: function(){
+		return true;
 	}
 });
 

@@ -12,7 +12,7 @@ var Q = require("q");
 		this.everything = {};
 		this.loadQueue = [];
 		this.NPCS = {};
-		this.entities = {};
+		this.entities = [];
 		this.groups = {};
 		this.states = {};
 		this.keyMap = {};
@@ -139,7 +139,7 @@ var Q = require("q");
 	engine.prototype.registerEntity = function(npc){
 		var id = utils.UUID();
 		this.everything[id] = npc;
-		this.entities[id] = npc;
+		this.entities.push(npc);
 		return id;
 	};
 	engine.prototype.doOther = function(item){

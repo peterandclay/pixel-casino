@@ -27,13 +27,7 @@ var loading = exports.loading = {
 	},
 	update: function(gameState, delta){
 		if(this.loaded){
-			if(!this.once){
-				this.once = true;
-				setTimeout(function(){
-					gameState.changeState(gameplay);
-				},2000);
-			}
-			
+			gameState.changeState(gameplay);
 		}
 	}
 };
@@ -48,10 +42,25 @@ var gameplay = exports.gameplay = {
 	render: function(gameState, canvas){
 		engine.renderLevel();
 		//canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		
-		canvas.canvas.ctx.drawImage(this.d.image, this.d.pos.x, this.d.pos.y, 96, 96);
+		canvas.canvas.ctx.clearRect(0,0, canvas.width, canvas.height);
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.render(canvas);
+			}
+		}
 		
 	},
 	update: function(gamestate, delta){
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.update(delta);
+			}
+		}
 	}
 };

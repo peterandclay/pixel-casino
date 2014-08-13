@@ -12,6 +12,7 @@ var Q = require("q");
 		this.everything = {};
 		this.loadQueue = [];
 		this.NPCS = {};
+		this.entities = {};
 		this.groups = {};
 		this.states = {};
 		this.keyMap = {};
@@ -69,7 +70,7 @@ var Q = require("q");
 			$h.events.trigger("assestsLoaded");
 		});
 		$h.update(function(delta){
-			that.gameState.update(that.gameState, delta);
+			that.gameState.update(delta);
 		});
 		$h.render(function(){
 			that.gameState.render(that.buffer);
@@ -135,10 +136,10 @@ var Q = require("q");
 		}
 		return group;
 	};
-	engine.prototype.registerNPC = function(npc){
+	engine.prototype.registerEntity = function(npc){
 		var id = utils.UUID();
 		this.everything[id] = npc;
-		this.NPCS[id] = npc;
+		this.entities[id] = npc;
 		return id;
 	};
 	engine.prototype.doOther = function(item){

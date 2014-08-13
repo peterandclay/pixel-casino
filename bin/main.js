@@ -2908,6 +2908,7 @@ var Q = require("q");
 		this.everything = {};
 		this.loadQueue = [];
 		this.NPCS = {};
+		this.entities = {};
 		this.groups = {};
 		this.states = {};
 		this.keyMap = {};
@@ -2965,7 +2966,7 @@ var Q = require("q");
 			$h.events.trigger("assestsLoaded");
 		});
 		$h.update(function(delta){
-			that.gameState.update(that.gameState, delta);
+			that.gameState.update(delta);
 		});
 		$h.render(function(){
 			that.gameState.render(that.buffer);
@@ -3031,10 +3032,10 @@ var Q = require("q");
 		}
 		return group;
 	};
-	engine.prototype.registerNPC = function(npc){
+	engine.prototype.registerEntity = function(npc){
 		var id = utils.UUID();
 		this.everything[id] = npc;
-		this.NPCS[id] = npc;
+		this.entities[id] = npc;
 		return id;
 	};
 	engine.prototype.doOther = function(item){
@@ -3094,7 +3095,7 @@ var engine = require("./engine.js").getInstance();
 function Entity(name, x, y){
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
-	this.id = engine.registerNPC(this);
+	this.id = engine.registerEntity(this);
 }
 
 util.Class(Entity, {
@@ -3115,6 +3116,12 @@ util.Class(Entity, {
 	},
 	getImage: function(){
 		return this.image;
+	},
+	update: function(delta){
+		
+	},
+	render: function(canvas){
+
 	}
 });
 
@@ -3395,13 +3402,7 @@ var loading = exports.loading = {
 	},
 	update: function(gameState, delta){
 		if(this.loaded){
-			if(!this.once){
-				this.once = true;
-				setTimeout(function(){
-					gameState.changeState(gameplay);
-				},2000);
-			}
-			
+			gameState.changeState(gameplay);
 		}
 	}
 };
@@ -3416,11 +3417,26 @@ var gameplay = exports.gameplay = {
 	render: function(gameState, canvas){
 		engine.renderLevel();
 		//canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		
-		canvas.canvas.ctx.drawImage(this.d.image, this.d.pos.x, this.d.pos.y, 96, 96);
+		canvas.canvas.ctx.clearRect(0,0, canvas.width, canvas.height);
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.render(canvas);
+			}
+		}
 		
 	},
 	update: function(gamestate, delta){
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.update(delta);
+			}
+		}
 	}
 };
 

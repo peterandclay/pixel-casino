@@ -82,7 +82,6 @@ var Q = require("q");
 		})
 		$h.run();
 		$h.events.listen("cameraMoved", function(){
-			console.log("move")
 			that.cameraMoved = true;
 		})
 		return q.promise;
@@ -92,6 +91,12 @@ var Q = require("q");
 		this.buffer.canvas.canvas.width = this.buffer.width;;
 		this.mapBuffer.canvas.canvas.width = this.mapBuffer.width;
 	};
+	engine.prototype.getPlayer = function(){
+		return this.player;
+	}
+	engine.prototype.setPlayer = function(player){
+		this.player = player;
+	}
 	engine.prototype.registerLevel = function(level) {
 		// body...
 		var id = utils.UUID();

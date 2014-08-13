@@ -8,7 +8,7 @@ function Guard(x,y){
 	this.active = true;
 	this.angle = 0;
 	this.state = this.patrol;
-	this.patrolPath = [this.pos.copy(), new $h.Vector(900, 500)];
+	this.patrolPath = [this.pos.copy(), new $h.Vector(1500, 500)];
 	this.patrolIndex = 0;
 	this.target = this.patrolPath[0];
 	this.fov = Math.PI/2;
@@ -30,7 +30,7 @@ util.Class(Guard, Entity, {
 		var facing = new $h.Vector(Math.cos(this.angle), Math.sin(this.angle)).normalize();
 		var toPlayer = player.pos.sub(this.pos).normalize();
 		var angle = Math.acos(facing.dot(toPlayer))
-		if(dist <=200 && angle <= this.fov){
+		if(dist <=200 && angle <= this.fov/2){
 			return true;
 		}
 	},
@@ -45,11 +45,24 @@ util.Class(Guard, Entity, {
 	render: function(canvas){
 		//Entity.prototype.render.call(this, canvas);
 		canvas.drawImageRotated(this.image, this.angle, this.pos.x, this.pos.y);
-		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle) * 200 +this.pos.x, Math.sin(this.angle)*200 + this.pos.y), "purple")
-		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle - this.fov/2) * 200 +this.pos.x, Math.sin(this.angle - this.fov/2) *200+ this.pos.y), "purple")
-		//canvas.drawLine(this.pos, $h.Vector(0,0))
-		//console.log(Math.sin(this.angle + this.fov/2)*200 + this.pos.y, Math.sin(this.angle)*200 + this.pos.y);
-		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle + this.fov/2) * 200 +this.pos.x,Math.sin(this.angle + this.fov/2)*200 + this.pos.y), "purple")
+		var points = [
+			$h.Vector(Math.cos(this.angle - this.fov/2) * 200 +this.pos.x, Math.sin(this.angle - this.fov/2) *200+ this.pos.y),
+			$h.Vector(Math.cos(this.angle) * 200 +this.pos.x, Math.sin(this.angle)*200 + this.pos.y),
+			$h.Vector(Math.cos(this.angle + this.fov/2) * 200 +this.pos.x,Math.sin(this.angle + this.fov/2)*200 + this.pos.y)
+		]
+		var pos = engine.camera.unproject(this.pos);
+		canvas.canvas.ctx.beginPath();
+		canvas.canvas.ctx.moveTo(pos.x, pos.y);
+		points.forEach(function(p){
+			var coords = engine.camera.unproject(p);
+			canvas.canvas.ctx.lineTo(coords.x, coords.y);
+
+		});
+		canvas.canvas.ctx.moveTo(pos.x, pos.y);
+		canvas.canvas.ctx.fillStyle = "rgba(0,0,255,.5)";
+		canvas.canvas.ctx.fill();
+		
+		
 
 	},
 	patrol: function(){

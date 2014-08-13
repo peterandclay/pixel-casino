@@ -28,10 +28,15 @@ util.Class(Entity, {
 		return this.image;
 	},
 	update: function(delta){
-		
+		if(engine.controls.up){
+			this.pos.x += 200 * (delta/1000);
+		}
 	},
 	render: function(canvas){
-
+		canvas.drawImage(this.image, this.pos.x, this.pos.y)
+	},
+	isActive: function(){
+		return true;
 	}
 });
 

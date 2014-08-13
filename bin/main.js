@@ -2908,11 +2908,14 @@ var Q = require("q");
 		this.everything = {};
 		this.loadQueue = [];
 		this.NPCS = {};
+		this.entities = {};
 		this.groups = {};
 		this.states = {};
+		this.keyMap = {};
+		this.controls = {};
+		this.keys = {};
 		return this;
 	}
-
 	engine.getInstance = function(){
 		return engine.prototype._singletonInstance;
 	}
@@ -2953,6 +2956,9 @@ var Q = require("q");
 		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
 		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
 		this.cameraMove = true;
+		this.load("keymap_default.json").then(function(data){
+			that.keyMap = JSON.parse(data.data);
+		});
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
@@ -2960,7 +2966,7 @@ var Q = require("q");
 			$h.events.trigger("assestsLoaded");
 		});
 		$h.update(function(delta){
-			that.gameState.update(that.gameState, delta);
+			that.gameState.update(delta);
 		});
 		$h.render(function(){
 			that.gameState.render(that.buffer);
@@ -3026,10 +3032,10 @@ var Q = require("q");
 		}
 		return group;
 	};
-	engine.prototype.registerNPC = function(npc){
+	engine.prototype.registerEntity = function(npc){
 		var id = utils.UUID();
 		this.everything[id] = npc;
-		this.NPCS[id] = npc;
+		this.entities[id] = npc;
 		return id;
 	};
 	engine.prototype.doOther = function(item){
@@ -3089,7 +3095,7 @@ var engine = require("./engine.js").getInstance();
 function Entity(name, x, y){
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
-	this.id = engine.registerNPC(this);
+	this.id = engine.registerEntity(this);
 }
 
 util.Class(Entity, {
@@ -3110,6 +3116,12 @@ util.Class(Entity, {
 	},
 	getImage: function(){
 		return this.image;
+	},
+	update: function(delta){
+		
+	},
+	render: function(canvas){
+
 	}
 });
 
@@ -3238,7 +3250,16 @@ module.exports = function(){
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
 		level.setMap("/assets/maps/map_1.json");
-		
+		console.log(engine.keyMap)
+		window.addEventListener("keydown", function(e){
+			engine.controls[engine.keyMap[e.which]] = true;
+			engine.keys[e.which] = true;
+			console.log(engine.controls, engine.keys);
+		});
+		window.addEventListener("keyup", function(e){
+			engine.controls[engine.keyMap[e.which]] = false;
+			engine.keys[e.which] = false;
+		});
 	});
 }
 },{"./engine":5,"./level.js":9,"./states":11}],9:[function(require,module,exports){
@@ -3381,13 +3402,7 @@ var loading = exports.loading = {
 	},
 	update: function(gameState, delta){
 		if(this.loaded){
-			if(!this.once){
-				this.once = true;
-				setTimeout(function(){
-					gameState.changeState(gameplay);
-				},2000);
-			}
-			
+			gameState.changeState(gameplay);
 		}
 	}
 };
@@ -3402,11 +3417,26 @@ var gameplay = exports.gameplay = {
 	render: function(gameState, canvas){
 		engine.renderLevel();
 		//canvas.drawRect(canvas.width, canvas.height, 0,0, "purple")
-		
-		canvas.canvas.ctx.drawImage(this.d.image, this.d.pos.x, this.d.pos.y, 96, 96);
+		canvas.canvas.ctx.clearRect(0,0, canvas.width, canvas.height);
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.render(canvas);
+			}
+		}
 		
 	},
 	update: function(gamestate, delta){
+		var len = engine.entities.length;
+		var en;
+		for(var i=0; i<len; i++){
+			en = engine.entities[i];
+			if(en.isActive()){
+				en.update(delta);
+			}
+		}
 	}
 };
 

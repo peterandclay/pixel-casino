@@ -5,7 +5,7 @@ var engine = require("./engine.js").getInstance();
 function Entity(name, x, y){
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
-	this.id = engine.registerNPC(this);
+	this.id = engine.registerEntity(this);
 }
 
 util.Class(Entity, {
@@ -39,6 +39,12 @@ util.Class(Entity, {
 	},
 	getImage: function(){
 		return this.image;
+	},
+	update: function(delta){
+		
+	},
+	render: function(canvas){
+
 	}
 });
 

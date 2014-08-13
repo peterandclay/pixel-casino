@@ -2,6 +2,7 @@ var Entity = require("./entity.js");
 var util = require("./utils");
 var engine = require("./engine").getInstance();
 var $h = require("../lib/headOn");
+var Light = require("./light");
 function Guard(x,y){
 	Entity.call(this, "guard", x,y);
 	this.active = true;
@@ -10,7 +11,7 @@ function Guard(x,y){
 	this.patrolPath = [this.pos.copy(), new $h.Vector(900, 500)];
 	this.patrolIndex = 0;
 	this.target = this.patrolPath[0];
-	this.fov = Math.PI/4;
+	this.fov = Math.PI/2;
 }
 
 util.Class(Guard, Entity, {
@@ -42,8 +43,13 @@ util.Class(Guard, Entity, {
 		this.pos.y += Math.sin(this.angle) * 200 * (delta/1000);
 	},
 	render: function(canvas){
-		Entity.prototype.render.call(this, canvas);
-		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle) * 10 +this.pos.x, Math.sin(this.angle)+ this.pos.y), "red")
+		//Entity.prototype.render.call(this, canvas);
+		canvas.drawImageRotated(this.image, this.angle, this.pos.x, this.pos.y);
+		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle) * 200 +this.pos.x, Math.sin(this.angle)*200 + this.pos.y), "purple")
+		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle - this.fov/2) * 200 +this.pos.x, Math.sin(this.angle - this.fov/2) *200+ this.pos.y), "purple")
+		//canvas.drawLine(this.pos, $h.Vector(0,0))
+		//console.log(Math.sin(this.angle + this.fov/2)*200 + this.pos.y, Math.sin(this.angle)*200 + this.pos.y);
+		canvas.drawLine(this.pos, $h.Vector(Math.cos(this.angle + this.fov/2) * 200 +this.pos.x,Math.sin(this.angle + this.fov/2)*200 + this.pos.y), "purple")
 
 	},
 	patrol: function(){

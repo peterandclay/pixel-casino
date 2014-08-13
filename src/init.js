@@ -28,7 +28,6 @@ module.exports = function(){
 			engine.controls[engine.keyMap[e.which]] = false;
 			engine.keys[e.which] = false;
 		});
-		var player = new Player();
 	});
 
 }

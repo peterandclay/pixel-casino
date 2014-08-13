@@ -10,7 +10,8 @@ util.Class(Player, Entity, {
 	update: function(delta){
 
 		var delta = delta/1000;
-
+		this.dx =0;
+		this.dy = 0;
 		if(engine.controls.up)
 			this.dy = 1;
 		if(engine.controls.down)
@@ -19,6 +20,7 @@ util.Class(Player, Entity, {
 			this.dx = -1;
 		if(engine.controls.right)
 			this.dx = 1;
+		
 
 
 		this.pos.x += this.dx * delta * 100;

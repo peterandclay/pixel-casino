@@ -3140,73 +3140,6 @@ var Player = require("./player");
 var init = require("./init");
 init();
 
-var mouse = new $h.Vector(0,0);
-var mask = $h.canvas.create("mask", window.innerWidth, window.innerHeight, engine.camera).append("body");
-
-mask.canvas.canvas.style.position = "absolute";
-mask.canvas.canvas.style.top = "0"
-mask.canvas.canvas.style.left = "0"
-var keys ={};
-var map = {
-	get:function(x,y){
-		x = Math.floor(x/this.size);
-		y = Math.floor(y/this.size);
-		//console.log(x,y);
-		if(y>=this.data.length|| x>=this.data[0].length || x<0 || y<0) return -1;
-		return this.data[y][x];
-	},
-	size:16,
-	length:26,
-	width:30,
-	data:[
-	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1],
-	[1,0,0,0,0,0,0,1,1,0,0,1,0,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-	[1,0,0,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-	]
-}
-engine.mainCanvas.drawRect(window.innerWidth, window.innerHeight, 0,0, "black");
-
-var light = new Light(20,50, 300, Math.PI/4, -Math.PI, "rgba(255,255,255,1)");
-var plight = new Light(20, 50, 40, Math.PI * 2);
-var tileSize = 16;
-var mul = 1;
-
-window.addEventListener("mousemove", function(e){
-	mouse = new $h.Vector(e.x, e.y);
-});
-window.addEventListener("keydown", function(e){
-	keys[e.which] = true;
-});
-window.addEventListener("keyup", function(e){
-	keys[e.which] = false;
-});
-$h.run();
-
-
-
 
 },{"../lib/headOn.js":2,"./engine.js":5,"./entity":6,"./init":8,"./light":10,"./player":11,"./utils":13,"./utils.js":13}],8:[function(require,module,exports){
 var states = require("./states");
@@ -3222,11 +3155,13 @@ module.exports = function(){
 	engine.addState("loading", states.loading);
 	engine.addState("gameplay", states.gameplay);
 	engine.loadImage("assets/images/guard.png", "guard");
+	engine.loadImage("assets/images/player.png", "player");
 	engine.loadImage("assets/images/tile.png", "level_1_map");
 	engine.load("assets/maps/map_1.json", "json").then(function(img, id){
 		JSON.parse(img.data);
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
+		var player = new Player();
 		level.setMap("/assets/maps/map_1.json");
 		window.addEventListener("keydown", function(e){
 			engine.controls[engine.keyMap[e.which]] = true;
@@ -3362,7 +3297,9 @@ function Player(name, x, y){
 
 util.Class(Player, Entity, {
 	update: function(delta){
+
 		var delta = delta/1000;
+
 		if(engine.controls.up)
 			this.dy = 1;
 		if(engine.controls.down)
@@ -3371,8 +3308,11 @@ util.Class(Player, Entity, {
 			this.dx = -1;
 		if(engine.controls.right)
 			this.dx = 1;
-		this.pos.x += this.dx * 10 * delta;
-		this.pos.y += this.dy * 10 * delta;
+
+
+		this.pos.x += this.dx * delta * 100;
+		this.pos.y += this.dy * delta * 100;
+
 	},
 	render: function(canvas){
 		Entity.prototype.render.call(this, canvas);

@@ -11,11 +11,13 @@ module.exports = function(){
 	engine.addState("loading", states.loading);
 	engine.addState("gameplay", states.gameplay);
 	engine.loadImage("assets/images/guard.png", "guard");
+	engine.loadImage("assets/images/player.png", "player");
 	engine.loadImage("assets/images/tile.png", "level_1_map");
 	engine.load("assets/maps/map_1.json", "json").then(function(img, id){
 		JSON.parse(img.data);
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
+		var player = new Player();
 		level.setMap("/assets/maps/map_1.json");
 		window.addEventListener("keydown", function(e){
 			engine.controls[engine.keyMap[e.which]] = true;

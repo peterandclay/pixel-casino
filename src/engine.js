@@ -18,6 +18,7 @@ var Q = require("q");
 		this.keyMap = {};
 		this.controls = {};
 		this.keys = {};
+		this.baseTileSize = 16;
 		return this;
 	}
 	engine.getInstance = function(){
@@ -107,6 +108,9 @@ var Q = require("q");
 	};
 	engine.prototype.getLevel = function(name){
 		return this.levels[name] || this.everything[id];
+	};
+	engine.prototype.getCurrentLevel = function(){
+		return this.currentLevel;
 	}
 	engine.prototype.renderLevel = function(){
 		if(this.cameraMoved){

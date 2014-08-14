@@ -1,7 +1,7 @@
 var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
-
+var astar = require("../lib/astar");
 function Entity(name, x, y){
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
@@ -37,6 +37,8 @@ util.Class(Entity, {
 	}, 
 	at: function(vec){
 		return Math.abs(vec.x - this.pos.x) <= 20 && Math.abs(vec.y - this.pos.y) <= 20;
+	},
+	path: function(position){
 	},
 	think: function(){}
 });

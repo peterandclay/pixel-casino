@@ -8,10 +8,13 @@ function Guard(x,y){
 	this.active = true;
 	this.angle = 0;
 	this.state = this.patrol;
-	this.patrolPath = [this.pos.copy(), new $h.Vector(1500, 500)];
+	this.patrolPath = [this.pos.copy(), new $h.Vector(1500, 200)];
 	this.patrolIndex = 0;
 	this.target = this.patrolPath[0];
-	this.fov = Math.PI/2;
+	this.fov = Math.PI/4;
+	this.FSM.init(this);
+	this.viewDistance = 400;
+	
 }
 
 util.Class(Guard, Entity, {
@@ -21,8 +24,29 @@ util.Class(Guard, Entity, {
 	setActive: function(active){
 		this.active = active;
 	},
-	think: function(){
-		this.state();
+	think: function(delta){
+		this.FSM.update(delta);
+	},
+	FSM:{
+		init: function(instance){
+			this.instance = instance;
+			this.state = instance.patrol;
+			this.state.enter();
+		},
+		setState: function(state){
+			this.state = state;
+		},
+  		changeState: function(state){
+    		if(this.state){
+      			this.state.exit(this.instance);
+     			this.pState = this.state;
+    		}
+	    	this.state = state;
+	    	this.state.enter(this.instance);
+  		},
+	  	update: function(delta){
+	    	this.state.update(this, delta);
+	  	}
 	},
 	canSeePlayer: function(){
 		var player = engine.getPlayer();
@@ -30,15 +54,41 @@ util.Class(Guard, Entity, {
 		var facing = new $h.Vector(Math.cos(this.angle), Math.sin(this.angle)).normalize();
 		var toPlayer = player.pos.sub(this.pos).normalize();
 		var angle = Math.acos(facing.dot(toPlayer))
-		if(dist <=200 && angle <= this.fov/2){
+		if(dist <=this.viewDistance && angle <= this.fov/2){
 			return true;
 		}
 	},
-	chasePlayer: function(){
-		var temp = engine.getPlayer().pos.sub(this.pos);
-		this.angle = Math.atan2(temp.y, temp.x);
+	chasePlayer:{
+		enter: function(guard){
+			var path = guard.path(engine.getPlayer().pos);
+			var temp = $h.Vector(path[0].x*96, path[0].y*96)
+			temp = temp.sub(guard.pos);
+			this.currentPath = path;
+			this.pathIndex = 0;
+			guard.angle = Math.atan2(temp.y, temp.x);
+		},
+		exit: function(){},
+		update: function(FSM){
+			var temp;
+			var guard = FSM.instance;
+			if(this.pathIndex + 1 === this.currentPath.length){
+				if(guard.canSeePlayer()){
+					this.enter(guard);
+				}else{
+					FSM.changeState(FSM.instance.patrol)
+				}
+			}else{
+				temp = $h.Vector(this.currentPath[this.pathIndex].x*96, this.currentPath[this.pathIndex].y*96);
+				if(FSM.instance.at(temp)){
+					this.pathIndex++;
+				}
+				temp = temp.sub(guard.pos);
+				guard.angle = Math.atan2(temp.y, temp.x);
+			}
+		}
 	},
 	update: function(delta){
+		
 		this.pos.x += Math.cos(this.angle) * 200 * (delta/1000);
 		this.pos.y += Math.sin(this.angle) * 200 * (delta/1000);
 	},
@@ -46,9 +96,9 @@ util.Class(Guard, Entity, {
 		//Entity.prototype.render.call(this, canvas);
 		canvas.drawImageRotated(this.image, this.angle, this.pos.x, this.pos.y);
 		var points = [
-			$h.Vector(Math.cos(this.angle - this.fov/2) * 200 +this.pos.x, Math.sin(this.angle - this.fov/2) *200+ this.pos.y),
-			$h.Vector(Math.cos(this.angle) * 200 +this.pos.x, Math.sin(this.angle)*200 + this.pos.y),
-			$h.Vector(Math.cos(this.angle + this.fov/2) * 200 +this.pos.x,Math.sin(this.angle + this.fov/2)*200 + this.pos.y)
+			$h.Vector(Math.cos(this.angle - this.fov/2) * this.viewDistance +this.pos.x, Math.sin(this.angle - this.fov/2) *this.viewDistance+ this.pos.y),
+			$h.Vector(Math.cos(this.angle) * this.viewDistance +this.pos.x, Math.sin(this.angle)*this.viewDistance + this.pos.y),
+			$h.Vector(Math.cos(this.angle + this.fov/2) * this.viewDistance +this.pos.x,Math.sin(this.angle + this.fov/2)*this.viewDistance + this.pos.y)
 		]
 		var pos = engine.camera.unproject(this.pos);
 		canvas.canvas.ctx.beginPath();
@@ -65,21 +115,24 @@ util.Class(Guard, Entity, {
 		
 
 	},
-	patrol: function(){
-
-		if(this.at(this.patrolPath[this.patrolIndex])){
-			console.log("hey2")
-			this.patrolIndex += 1;
-			this.patrolIndex %= this.patrolPath.length;
-			console.log(this.patrolIndex);
-		}
-		this.target = this.patrolPath[this.patrolIndex];
-		this.angle = this.target.sub(this.pos);
-		this.angle = Math.atan2(this.angle.y, this.angle.x);
-		if(this.canSeePlayer()){
-			console.log("saw")
-			this.target = engine.getPlayer();
-			this.state = this.chasePlayer;
+	patrol: {
+		enter:function(){
+			this.patrolIndex = 0;
+		},
+		exit: function(){},
+		update: function(FSM, delta){
+			if(FSM.instance.at(FSM.instance.patrolPath[this.patrolIndex])){
+				this.patrolIndex += 1;
+				this.patrolIndex %= FSM.instance.patrolPath.length;
+			}
+			this.target = FSM.instance.patrolPath[this.patrolIndex];
+			this.angle = this.target.sub(FSM.instance.pos);
+			FSM.instance.angle = Math.atan2(this.angle.y, this.angle.x);
+			if(FSM.instance.canSeePlayer()){
+				console.log("saw")
+				this.target = engine.getPlayer();
+				FSM.changeState(FSM.instance.chasePlayer);
+			}
 		}
 	}
 

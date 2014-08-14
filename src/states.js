@@ -35,7 +35,7 @@ var loading = exports.loading = {
 
 var gameplay = exports.gameplay = {
 	enter: function(){
-		this.d = new Guard(500, 500);
+		this.d = new Guard(500, 200);
 		engine.clearBuffers();
 		this.last = 0;
 	},
@@ -71,7 +71,7 @@ var gameplay = exports.gameplay = {
 			if(en.isActive()){
 				en.update(delta);
 				if(think){
-					en.think();
+					en.think(delta);
 				}
 			}
 		}

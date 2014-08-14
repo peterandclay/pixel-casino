@@ -39,6 +39,12 @@ util.Class(Entity, {
 		return Math.abs(vec.x - this.pos.x) <= 20 && Math.abs(vec.y - this.pos.y) <= 20;
 	},
 	path: function(position){
+		var currentLevel = engine.getCurrentLevel();
+		var start = currentLevel.toTileCoords(this.pos);
+		var end = currentLevel.toTileCoords(position)
+		start = currentLevel.currentMap.collisions.grid[start.x][start.y];
+		end = currentLevel.currentMap.collisions.grid[end.x][end.y];
+		return astar.astar.search(currentLevel.currentMap.collisions, start, end );
 	},
 	think: function(){}
 });

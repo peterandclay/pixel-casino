@@ -59,6 +59,9 @@ Class(Level, {
 		this.tileSet = map.data.tilesets[0];
 		this.mapdata = map.data.layers[0].data;
 	},
+	toTileCoords: function(vec){
+		return $h.Vector(Math.floor(vec.x/96), Math.floor(vec.y/96))
+	},
 	render: function(canvas){
 		var jumpx = (this.currentMap.data.canvas.width/this.tileSet.tilewidth);
 		for(var i = 0; i< this.mapdata.length; i++){

@@ -32,6 +32,16 @@ Class(Level, {
 	getMapGrid: function(){
 		return this.currentMapGrid;
 	},
+	getMap: function(x , y){
+		var pos;
+		if(arguments.length === 1){
+			pos = this.toTileCoords(x);
+		}else{
+			pos = $h.Vector(x, y);
+		}
+
+		return this.currentMap.collisions.grid[pos.y][pos.x].weight;
+	},
 	convertTo2D: function(map, tileSizes, width){
 		console.log("converting!!!")
 		var finalMap = [];

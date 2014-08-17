@@ -4,7 +4,7 @@ var Level = require("./level.js");
 var Player = require("./player");
 module.exports = function(){
 	var level = new Level("main");
-	level.addMap("/assets/maps/map_1.json");
+	level.addMap("assets/maps/map_1.json");
 	
 	engine.registerLevel(level);
 	engine.loadLevel("main");
@@ -19,7 +19,7 @@ module.exports = function(){
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
 		var player = new Player();
 		engine.setPlayer(player);
-		level.setMap("/assets/maps/map_1.json");
+		level.setMap("assets/maps/map_1.json");
 		window.addEventListener("keydown", function(e){
 			engine.controls[engine.keyMap[e.which]] = true;
 			engine.keys[e.which] = true;

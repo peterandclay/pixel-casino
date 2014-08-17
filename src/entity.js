@@ -38,6 +38,11 @@ util.Class(Entity, {
 	at: function(vec){
 		return Math.abs(vec.x - this.pos.x) <= 20 && Math.abs(vec.y - this.pos.y) <= 20;
 	},
+	checkCollision: function(){
+		if(engine.getCurrentLevel().getMap(this.pos) === 0){
+			this.pos = this.old;
+		}
+	},
 	path: function(position){
 		var currentLevel = engine.getCurrentLevel();
 		var start = currentLevel.toTileCoords(this.pos);

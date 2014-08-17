@@ -3,7 +3,7 @@ var engine = require("./engine.js").getInstance();
 var Entity = require("./entity.js");
 
 function Player(name, x, y){
-	Entity.call(this, "player", 5, 10);
+	Entity.call(this, "player", 5, 10, 32, 32);
 }
 
 util.Class(Player, Entity, {

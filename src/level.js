@@ -40,7 +40,10 @@ Class(Level, {
 			pos = $h.Vector(x, y);
 		}
 
-		return this.currentMap.collisions.grid[pos.y][pos.x].weight;
+		return this.currentMap.collisions.grid[pos.y][pos.x];
+	},
+	tileToWorld: function(tile){
+		return $h.Vector(tile.x * 96, tile.y *  96);
 	},
 	convertTo2D: function(map, tileSizes, width){
 		console.log("converting!!!")

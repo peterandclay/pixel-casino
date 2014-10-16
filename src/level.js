@@ -82,7 +82,8 @@ Class(Level, {
 			var x = i%jumpx;
 			if(engine.camera.inView(x*96, y*96) || engine.camera.inView(x*96 +96, y*96 +96)){
 				var coords = engine.camera.unproject(headOn.Vector(x*96,y*96));
-				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), this.mapdata[i]*16, 0, 16,16,coords.x, coords.y, 96,96 );
+				var pix = this.mapdata[i] === 0 ? 16 : 0;
+				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), pix, 0, 16,16,coords.x, coords.y, 96,96 );
 			}
 			
 		}

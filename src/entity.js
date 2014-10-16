@@ -45,14 +45,30 @@ util.Class(Entity, {
 		var verts = $h.getPoints(this);
 		//god why cant this just stay constant
 		var that = this;
+		var hits = [];
+		var t;
 		//$h.getPoints might should optionally return vectors instead of nested arrays
-		verts.some(function(f){
+		verts.some(function(f, i){
 			var tile = engine.getCurrentLevel().getMap(new $h.Vector(f[0], f[1]))
-			if( tile.weight === 0){
-				that.pos = that.old;
-				return;
+			var ent;
+			var overlap;
+			var normal;
+			//console.log($h.collides(ent, that));
+			if(tile.weight === 0){
+				ent = {position:$h.Vector(tile.y*96,tile.x*96), angle:0, width:96, height:96};
+				if(overlap = $h.collides(ent, that)){
+					normal = $h.Vector(overlap.normal)
+					that.pos = that.pos.add(normal.mul(overlap.overlap));
+					//that.pos = that.old;
+					return
+				}
+				//console.log("heyo")
+				
+				
 			}
 		});
+	
+
 		
 	},
 	path: function(position){

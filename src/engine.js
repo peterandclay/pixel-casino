@@ -26,7 +26,6 @@ var Q = require("q");
 	}
 	engine.prototype.gameState = {
   		init: function(){
-  			console.log(engine.getInstance().states)
     		this.state = engine.getInstance().states.loading;
     		this.state.enter();
     		this.engine = engine.getInstance();
@@ -75,16 +74,14 @@ var Q = require("q");
 			that.gameState.update(delta);
 		});
 		$h.render(function(){
-
 			that.gameState.render(that.buffer);
 			that.mainCanvas.canvas.ctx.drawImage(that.mapBuffer.canvas.canvas,0,0);
 			that.mainCanvas.canvas.ctx.drawImage(that.buffer.canvas.canvas,0,0);
-			
-		})
+		});
 		$h.run();
 		$h.events.listen("cameraMoved", function(){
 			that.cameraMoved = true;
-		})
+		});
 		return q.promise;
 	};
 	engine.prototype.clearBuffers = function(){
@@ -104,7 +101,7 @@ var Q = require("q");
 		level.ID = id;
 		this.levels[level.name] = level;
 		this.everything[id] = this.levels[level.name];
-		console.log(this.levels)
+		console.log(this.levels);
 	};
 	engine.prototype.getLevel = function(name){
 		return this.levels[name] || this.everything[id];
@@ -119,7 +116,7 @@ var Q = require("q");
 			this.currentLevel.render(this.mapBuffer);
 			this.cameraMoved = false;
 		}
-		
+
 	}
 	engine.prototype.loadEverything = function(){
 		this.loading = true;
@@ -144,7 +141,7 @@ var Q = require("q");
 		return Q.all(promises);
 	}
 	engine.prototype.startGameLoop = function(){
-		
+
 	};
 	engine.prototype.group = function(name, entity){
 		var group = this.groups[name] || [];

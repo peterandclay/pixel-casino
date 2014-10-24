@@ -2,6 +2,7 @@ var $h = require("../lib/headOn.js");
 var utils = require("./utils.js");
 var Q = require("q");
 (function(){
+
 	function engine(){
 		if ( engine.prototype._singletonInstance ) {
 		    return engine.prototype._singletonInstance;
@@ -60,6 +61,8 @@ var Q = require("q");
 		this.mainCanvas.append("body");
 		this.buffer = $h.canvas.create("buffer", width, height, this.camera);
 		this.mapBuffer = $h.canvas.create("mapBuffer", width, height, this.camera);
+
+		 //ctxNS.imageSmoothingEnabled = false;
 		this.cameraMove = true;
 		this.load("keymap_default.json").then(function(data){
 			that.keyMap = JSON.parse(data.data);
@@ -74,6 +77,7 @@ var Q = require("q");
 
 
 		});
+
 		$h.update(function(delta){
 			that.gameState.update(delta);
 		});
@@ -90,9 +94,10 @@ var Q = require("q");
 		return q.promise;
 	};
 	engine.prototype.clearBuffers = function(){
-		this.mainCanvas.canvas.canvas.width = this.mainCanvas.width;;
-		this.buffer.canvas.canvas.width = this.buffer.width;;
-		this.mapBuffer.canvas.canvas.width = this.mapBuffer.width;
+		console.log("hi")
+		//this.mainCanvas.canvas.canvas.width = this.mainCanvas.width;;
+		///this.buffer.canvas.canvas.width = this.buffer.width;;
+		//this.mapBuffer.canvas.canvas.width = this.mapBuffer.width;
 	};
 	engine.prototype.getPlayer = function(){
 		return this.player;

@@ -18,10 +18,10 @@ Class(Level, {
 			that.maps[src].data = JSON.parse(data.data);
 			that.maps[src].loaded = true;
 			that.maps[src].id = data.id;
-			
-			
-			
-			
+
+
+
+
 			console.log(that.maps[src].data.tilesets[0], "color:rgba(0,0,255,.8)")
 			that.maps[src].collisions = new astar.Graph(that.convertTo2D(that.maps[src].data.layers[0].data, that.maps[src].data.tilesets[0], that.maps[src].data.canvas.width));
 		}).fail(function(err){
@@ -51,13 +51,13 @@ Class(Level, {
 		var intermediate = [];
 		var jumpx = (width/engine.baseTileSize);
 		var spread = 96/ engine.baseTileSize;
-		
+
 		for(var i = 0; i< map.length; i++){
 			var y = Math.floor(i/jumpx);
 			var x = i%jumpx;
 			finalMap[y] = finalMap[y] || [];
 			finalMap[y][x] = map[i];
-			
+
 		}
 		return finalMap
 
@@ -83,9 +83,9 @@ Class(Level, {
 			if(engine.camera.inView(x*96, y*96) || engine.camera.inView(x*96 +96, y*96 +96)){
 				var coords = engine.camera.unproject(headOn.Vector(x*96,y*96));
 				var pix = this.mapdata[i] === 0 ? 16 : 0;
-				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), pix, 0, 16,16,coords.x, coords.y, 96,96 );
+				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), pix, 0, 16, 16, ~~coords.x, ~~coords.y, 96,96);
 			}
-			
+
 		}
 		// for(var y=0; y<this.currentMap.collisions.grid.length; y++){
 		// 	for(var x =0; x< this.currentMap.collisions.grid[0].length; x++){

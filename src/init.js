@@ -20,7 +20,6 @@ module.exports = function(){
 		var player = new Player();
 		engine.setPlayer(player);
 		level.setMap("assets/maps/map_1.json");
-		
 	});
 
 }

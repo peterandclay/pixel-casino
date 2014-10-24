@@ -81,11 +81,15 @@ Class(Level, {
 	},
 	render: function(canvas){
 		var jumpx = (this.currentMap.data.canvas.width/this.tileSet.tilewidth);
+		var vec = headOn.Vector(0,0);
+		var coords = headOn.Vector(0,0);
 		for(var i = 0; i< this.mapdata.length; i++){
 			var y = Math.floor(i/jumpx);
 			var x = i%jumpx;
 			if(engine.camera.inView(x*96, y*96) || engine.camera.inView(x*96 +96, y*96 +96)){
-				var coords = engine.camera.unproject(headOn.Vector(x*96,y*96));
+				vec.x = x*96;
+				vec.y = y*96;
+				engine.camera.unproject(vec, coords);
 				var pix = this.mapdata[i] === 0 ? 16 : 0;
 				canvas.canvas.ctx.drawImage(engine.getImage("level_1_map"), pix, 0, 16, 16, ~~coords.x, ~~coords.y, 96,96);
 			}

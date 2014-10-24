@@ -9,6 +9,9 @@ function Entity(name, x, y, width, height, angle){
 	this.image = engine.getImage(name);
 	this.pos = new $h.Vector(x, y);
 	this.id = engine.registerEntity(this);
+	this.tile = $h.Vector(0,0);
+	this.tile.x = Math.floor(x/96);
+	this.tile.y = Math.floor(y/96);
 }
 
 util.Class(Entity, {
@@ -37,7 +40,7 @@ util.Class(Entity, {
 	},
 	isActive: function(){
 		return true;
-	}, 
+	},
 	at: function(vec){
 		return Math.abs(vec.x - this.pos.x) <= 20 && Math.abs(vec.y - this.pos.y) <= 20;
 	},
@@ -63,13 +66,13 @@ util.Class(Entity, {
 					return
 				}
 				//console.log("heyo")
-				
-				
+
+
 			}
 		});
-	
 
-		
+
+
 	},
 	path: function(position){
 		var currentLevel = engine.getCurrentLevel();

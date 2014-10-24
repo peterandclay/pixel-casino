@@ -67,8 +67,12 @@ var Q = require("q");
 		this.loadEverything().then(function(){
 			this.loading = false;
 			this.loaded = true;
-			q.resolve();
-			$h.events.trigger("assestsLoaded");
+		//	setTimeout(function(){
+				q.resolve();
+				$h.events.trigger("assestsLoaded");
+		//	},500)
+
+
 		});
 		$h.update(function(delta){
 			that.gameState.update(delta);
@@ -78,6 +82,7 @@ var Q = require("q");
 			that.mainCanvas.canvas.ctx.drawImage(that.mapBuffer.canvas.canvas,0,0);
 			that.mainCanvas.canvas.ctx.drawImage(that.buffer.canvas.canvas,0,0);
 		});
+		this.setupIO(window);
 		$h.run();
 		$h.events.listen("cameraMoved", function(){
 			that.cameraMoved = true;
@@ -202,6 +207,23 @@ var Q = require("q");
 		console.log( this.levels[levelname])
 		this.currentLevel = level;
 	};
+
+	engine.prototype.setupIO = function(element){
+		var that = this
+		element.addEventListener("keydown", function(e){
+			that.controls[that.keyMap[e.which]] = true;
+			that.keys[e.which] = true;
+		});
+		element.addEventListener("keyup", function(e){
+			that.controls[that.keyMap[e.which]] = false;
+			that.keys[e.which] = false;
+		});
+		element.addEventListener("mousemove", function(e){
+			that.mouse = that.mouse || new $h.Vector(0,0);
+			that.mouse.x = e.x;
+			that.mouse.y = e.y;
+		});
+	}
 	var instance = new engine();
 	module.exports = engine;
 }());

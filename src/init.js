@@ -5,7 +5,7 @@ var Player = require("./player");
 module.exports = function(){
 	var level = new Level("main");
 	level.addMap("assets/maps/map_1.json");
-	
+
 	engine.registerLevel(level);
 	engine.loadLevel("main");
 	engine.addState("loading", states.loading);
@@ -20,19 +20,7 @@ module.exports = function(){
 		var player = new Player();
 		engine.setPlayer(player);
 		level.setMap("assets/maps/map_1.json");
-		window.addEventListener("keydown", function(e){
-			engine.controls[engine.keyMap[e.which]] = true;
-			engine.keys[e.which] = true;
-		});
-		window.addEventListener("keyup", function(e){
-			engine.controls[engine.keyMap[e.which]] = false;
-			engine.keys[e.which] = false;
-		});
-		window.addEventListener("mousemove", function(e){
-			engine.mouse = engine.mouse || new $h.Vector(0,0);
-			engine.mouse.x = e.x;
-			engine.mouse.y = e.y;
-		});
+		
 	});
 
 }

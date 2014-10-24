@@ -15,7 +15,7 @@ function Guard(x,y){
 	this.FSM.init(this);
 	this.viewDistance = 400;
 	this.v = $h.Vector(0,0);
-	
+
 }
 
 util.Class(Guard, Entity, {
@@ -89,15 +89,15 @@ util.Class(Guard, Entity, {
 			if(guard.canSeePlayer()){
 				var angle = engine.getPlayer().pos.sub(guard.pos);
 				guard.angle = Math.atan2(angle.y, angle.x);
-				
+
 				guard.v.x = Math.cos(guard.angle) * 200;
 				guard.v.y = Math.sin(guard.angle) * 200;
-				
+
 			}else{
-				
+
 				FSM.changeState(FSM.instance.patrol);
 			}
-			
+
 		}
 	},
 	update: function(delta){
@@ -123,7 +123,7 @@ util.Class(Guard, Entity, {
 		// });
 		canvas.canvas.ctx.moveTo(pos.x, pos.y);
 		canvas.canvas.ctx.fillStyle = "rgba(0,0,255,.5)";
-		
+
 		canvas.canvas.ctx.arc(pos.x, pos.y, this.viewDistance, this.angle - this.fov/2, this.angle + this.fov/2, false);
 		canvas.canvas.ctx.fill();
 
@@ -135,7 +135,6 @@ util.Class(Guard, Entity, {
 		},
 		exit: function(){},
 		update: function(FSM, delta){
-			console.log("back to it!")
 			var guard = FSM.instance;
 			if(FSM.instance.at(FSM.instance.patrolPath[this.patrolIndex])){
 				this.patrolIndex += 1;
@@ -145,14 +144,13 @@ util.Class(Guard, Entity, {
 			this.angle = this.target.sub(FSM.instance.pos);
 			FSM.instance.angle = Math.atan2(this.angle.y, this.angle.x);
 			if(FSM.instance.canSeePlayer()){
-				console.log("saw")
 				this.target = engine.getPlayer();
 				FSM.changeState(FSM.instance.chasePlayer);
 			}
 			guard.v.x = Math.cos(guard.angle) * 200;
 			guard.v.y = Math.sin(guard.angle) * 200;
 		}
-		
+
 	}
 
 });

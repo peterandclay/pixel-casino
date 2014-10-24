@@ -1,6 +1,6 @@
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
-var $h = require("../lib/headOn");
+var $h = require("../lib/headOn/head-on.js");
 var astar = require("../lib/astar");
 function Level(name){
 	this.name = name;

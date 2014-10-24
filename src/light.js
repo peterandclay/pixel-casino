@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn");
+var $h = require("../lib/headOn/head-on.js");
 var ray = require("./utils").ray;
 var config = require("./config");
 function Light(x, y, radius, sector, angle, color){
@@ -28,7 +28,7 @@ Light.prototype = {
 		var t;
 		var p2x;
 		var p2y;
-		
+
 		//Start a path
 		ctx.beginPath();
 		ctx.moveTo(this.position.x, this.position.y);

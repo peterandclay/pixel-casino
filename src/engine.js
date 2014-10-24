@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn.js");
+var $h = require("../lib/headOn/head-on.js");
 var utils = require("./utils.js");
 var Q = require("q");
 (function(){

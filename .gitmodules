@@ -1,0 +1,3 @@
+[submodule "lib/headon"]
+	path = lib/headon
+	url = git@github.com:powerc9000/head-on.js.git

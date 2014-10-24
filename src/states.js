@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn");
+var $h = require("../lib/headOn/head-on.js");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var Entity = require("./entity");
@@ -24,7 +24,7 @@ var loading = exports.loading = {
 			canvas.drawText("loading: "+this.percent*100 + "%", canvas.width/2, canvas.height/2, "50px", "white", "center");
 			this.percentChange = false;
 		}
-		
+
 	},
 	update: function(gameState, delta){
 		if(this.loaded){
@@ -53,7 +53,7 @@ var gameplay = exports.gameplay = {
 				en.render(canvas);
 			}
 		}
-		
+
 	},
 	update: function(gamestate, delta){
 		this.last += delta;

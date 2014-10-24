@@ -14,13 +14,12 @@ function Player(name, x, y){
 
 util.Class(Player, Entity, {
 	update: function(delta){
-
-
-
 		var delta = delta/1000;
 
 	  this.lerpamount += delta;
 		var t = this.lerpamount/.5;
+		var tempx = 0;
+		var tempy = 0;
 		this.dx = this.dy = 0;
 		this.pos.x = $h.lerp(this.old.x *96, this.tile.x *96, t);
 		this.pos.y = $h.lerp(this.old.y*96, this.tile.y*96, t);
@@ -31,28 +30,31 @@ util.Class(Player, Entity, {
 			this.moved = false;
 		}
 
-
-
-		this.old = this.tile.copy();
 		if(engine.controls.up){
-			this.tile.y --;
+			tempy --;
 			this.moved = true;
 		}
 		if(engine.controls.down){
-			this.tile.y++;
+			tempy++;
 			this.moved = true;
 		}
 
 		if(engine.controls.left){
-			this.tile.x--;
+			tempx--;
 			this.moved = true;
 		}
 		if(engine.controls.right){
-			this.tile.x++;
+			tempx++;
 			this.moved = true;
 		}
 
-
+		if(!engine.getCurrentLevel().collides(this.tile.x + tempx, this.tile.y + tempy)){
+			this.old = this.tile.copy();
+			this.tile.x += tempx;
+			this.tile.y += tempy;
+			tempx = 0;
+			tempy = 0;
+		}
 
 
 

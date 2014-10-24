@@ -75,6 +75,10 @@ Class(Level, {
 	toTileCoords: function(vec){
 		return $h.Vector(Math.floor(vec.x/96), Math.floor(vec.y/96))
 	},
+	collides: function(x, y){
+		var tile = this.getMap(x, y);
+		return tile.weight === 0;
+	},
 	render: function(canvas){
 		var jumpx = (this.currentMap.data.canvas.width/this.tileSet.tilewidth);
 		for(var i = 0; i< this.mapdata.length; i++){

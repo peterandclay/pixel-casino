@@ -65,14 +65,8 @@ util.Class(Entity, {
 					//that.pos = that.old;
 					return
 				}
-				//console.log("heyo")
-
-
 			}
 		});
-
-
-
 	},
 	path: function(position){
 		var currentLevel = engine.getCurrentLevel();

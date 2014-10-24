@@ -71,8 +71,8 @@ var Q = require("q");
 			this.loading = false;
 			this.loaded = true;
 		//	setTimeout(function(){
-				q.resolve();
-				$h.events.trigger("assestsLoaded");
+			q.resolve();
+			$h.events.trigger("assestsLoaded");
 		//	},500)
 
 

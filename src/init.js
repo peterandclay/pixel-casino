@@ -1,7 +1,9 @@
+"use strict";
 var states = require("./states");
 var engine = require("./engine").getInstance();
-var Level = require("./level.js");
+var Level  = require("./level.js");
 var Player = require("./player");
+var $h     = require("../lib/headOn.js");
 module.exports = function(){
 	var level = new Level("main");
 	level.addMap("assets/maps/map_1.json");
@@ -17,9 +19,14 @@ module.exports = function(){
 		JSON.parse(img.data);
 	});
 	engine.init(window.innerWidth, window.innerHeight).then(function(){
+
 		var player = new Player();
+		var l;
 		engine.setPlayer(player);
 		level.setMap("assets/maps/map_1.json");
+		l = engine.getCurrentLevel();
+		//console.log("latch")
+		engine.camera.latchTo($h.Vector(0,0), $h.Vector(l.getWidth(),0), $h.Vector(l.getWidth(), l.getHeight()), $h.Vector(0, l.getHeight()));
 	});
 
 }

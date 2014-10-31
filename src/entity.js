@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn/head-on.js");
+var $h = require("../lib/headOn.js");
 var util = require("./utils");
 var engine = require("./engine.js").getInstance();
 var astar = require("../lib/astar");

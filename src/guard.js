@@ -1,7 +1,7 @@
 var Entity = require("./entity.js");
 var util = require("./utils");
 var engine = require("./engine").getInstance();
-var $h = require("../lib/headOn/head-on.js");
+var $h = require("../lib/headOn.js");
 var Light = require("./light");
 function Guard(x,y){
 	Entity.call(this, "guard", x,y);

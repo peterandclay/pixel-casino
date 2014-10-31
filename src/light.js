@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn/head-on.js");
+var $h = require("../lib/headOn.js");
 var ray = require("./utils").ray;
 var config = require("./config");
 function Light(x, y, radius, sector, angle, color){

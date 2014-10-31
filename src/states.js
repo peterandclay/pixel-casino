@@ -1,4 +1,4 @@
-var $h = require("../lib/headOn/head-on.js");
+var $h = require("../lib/headOn.js");
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
 var Entity = require("./entity");

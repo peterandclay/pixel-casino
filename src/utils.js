@@ -1,4 +1,4 @@
-$h = require("../lib/headOn/head-on.js");
+$h = require("../lib/headOn.js");
 exports.UUID = (function() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)

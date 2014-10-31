@@ -1,6 +1,7 @@
+"use strict";
 var Class = require("./utils").Class;
 var engine = require("./engine").getInstance();
-var $h = require("../lib/headOn/head-on.js");
+var $h = require("../lib/headOn.js");
 var astar = require("../lib/astar");
 function Level(name){
 	this.name = name;
@@ -59,8 +60,17 @@ Class(Level, {
 			finalMap[y][x] = map[i];
 
 		}
+		this.map2D = finalMap;
 		return finalMap
 
+	},
+	getHeight: function(){
+		console.log(this.map2D.length*96);
+		return this.map2D.length*96;
+	},
+	getWidth: function(){
+		console.log(this.currentMap.data.canvas.width*4);
+		return this.currentMap.data.canvas.width*4;
 	},
 	setMap: function(src){
 		var map = this.maps[src];
